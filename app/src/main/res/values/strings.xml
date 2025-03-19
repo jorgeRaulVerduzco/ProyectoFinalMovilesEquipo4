@@ -2,8 +2,14 @@
     <string name="app_name">ClosetVirtual</string>
     <string name="closet_virtual">CLOSET\nVIRTUAL</string>
     <string name="incio">INICIO DE SESION</string>
-    <string name="usaurio">usuario</string>
-    <string name="password">contraseña</string>
+    <string name="usaurio">Usuario</string>
+    <string name="password">Contraseña</string>
     <string name="nocuenta">NO TIENES CUENTA?</string>
     <string name="login">Login</string>
+    <string name="registrar">REGISTRAR</string>
+    <string name="nombres">Nombre(s)</string>
+    <string name="apellidos">Apellido(s)</string>
+    <string name="eMail">E-Mail</string>
+    <string name="confirmarContraseña">Confirmar Contraseña</string>
+
 </resources>
