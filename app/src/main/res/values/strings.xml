@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">ClosetVirtual</string>
+    <string name="closet_virtual">CLOSET\nVIRTUAL</string>
+    <string name="incio">INICIO DE SESION</string>
+    <string name="usaurio">usuario</string>
+    <string name="password">contraseña</string>
+    <string name="nocuenta">NO TIENES CUENTA?</string>
+    <string name="login">Login</string>
+</resources>
