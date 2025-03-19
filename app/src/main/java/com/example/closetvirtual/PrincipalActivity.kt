@@ -1,6 +1,8 @@
 package com.example.closetvirtual
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -20,6 +22,11 @@ class PrincipalActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+        val btnAddItem = findViewById<Button>(R.id.btnAddItem)
+        btnAddItem.setOnClickListener {
+            val intent = Intent(this, RegisrarPrendaActivity::class.java)
+            startActivity(intent)
         }
         cargarPrendasEjemplo()
         mostrarPrendasEnUI()
