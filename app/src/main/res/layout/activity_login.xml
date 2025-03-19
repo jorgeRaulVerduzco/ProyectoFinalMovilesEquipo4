@@ -21,7 +21,7 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:src="@drawable/closet_icon"
-             />
+           />
 
         <TextView
             android:layout_width="wrap_content"
@@ -44,40 +44,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/registrar"
+            android:text="@string/incio"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="40dp" />
-
-        <EditText
-            android:id="@+id/etFirstName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/nombres"
-            android:padding="16dp"
-            android:background="@android:drawable/editbox_background"
-            android:layout_marginBottom="16dp" />
-
-        <EditText
-            android:id="@+id/etLastName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/apellidos"
-            android:padding="16dp"
-            android:background="@android:drawable/editbox_background"
-            android:layout_marginBottom="16dp" />
-
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/eMail"
-            android:inputType="textEmailAddress"
-            android:padding="16dp"
-            android:background="@android:drawable/editbox_background"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="64dp" />
 
         <EditText
             android:id="@+id/etUsername"
@@ -96,25 +68,24 @@
             android:inputType="textPassword"
             android:padding="16dp"
             android:background="@android:drawable/editbox_background"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="32dp" />
 
-        <EditText
-            android:id="@+id/etConfirmPassword"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvNoAccount"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/confirmarContraseña"
-            android:inputType="textPassword"
-            android:padding="16dp"
-            android:background="@android:drawable/editbox_background"
+            android:text="@string/nocuenta"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
             android:layout_marginBottom="32dp" />
 
         <Button
-            android:id="@+id/btnRegister"
+            android:id="@+id/btnLogin"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
+            android:text="@string/login"
+            android:textColor="@android:color/white"
             android:background="@android:color/black"
-            android:padding="10dp"
-            android:text="@string/registrar"
-            android:textColor="@android:color/white" />
+            android:padding="16dp" />
     </LinearLayout>
 </LinearLayout>
