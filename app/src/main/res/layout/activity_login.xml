@@ -111,9 +111,9 @@
         <Button
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:background="@android:color/black"
-            android:padding="1dp"
+            android:padding="10dp"
             android:text="@string/registrar"
             android:textColor="@android:color/white" />
     </LinearLayout>
