@@ -7,6 +7,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".DetalleActivity">
+    <!-- FALTA HACERLA COMO EL STORYBOARD -->
+
     <ImageView
         android:id="@+id/ivPrenda"
         android:layout_width="100dp"
