@@ -2,7 +2,9 @@ package com.example.closetvirtual
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Spinner
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -23,5 +25,14 @@ class RegisrarPrendaActivity : AppCompatActivity() {
             val intent = Intent(this, PrincipalActivity::class.java)
             startActivity(intent)
         }
+        val spinner = findViewById<Spinner>(R.id.ListaDeCategoria)
+
+        val categorias = arrayOf("Top", "Bottom", "Bodysuit", "Zapatos", "Accesorios")
+
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categorias)
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        spinner.adapter = adapter
     }
 }

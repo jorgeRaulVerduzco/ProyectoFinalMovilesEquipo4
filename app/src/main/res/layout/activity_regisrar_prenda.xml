@@ -9,7 +9,6 @@
     android:background="@android:color/white"
     tools:context=".RegisrarPrendaActivity">
 
-    <!-- Header with logo and user icon -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -18,7 +17,6 @@
         android:background="@android:color/black"
         android:padding="16dp">
 
-        <!-- Closet Icon and Title -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -111,12 +109,6 @@
                 android:padding="16dp"
                 android:popupBackground="@android:color/white" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@android:drawable/arrow_down_float"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="12dp" />
         </LinearLayout>
 
         <LinearLayout
