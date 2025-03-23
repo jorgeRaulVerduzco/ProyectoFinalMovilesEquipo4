@@ -1,6 +1,15 @@
 package com.example.closetvirtual
 
+import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
+import android.util.DisplayMetrics
+import android.view.View
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -16,5 +25,62 @@ class DetalleActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val imagen = intent.getIntExtra("imagen", R.drawable.ic_launcher_background)
+        val nombre = intent.getStringExtra("nombre") ?: "Nombre no disponible"
+        val categoria = intent.getStringExtra("categoria") ?: "Categoría no disponible"
+        val color = intent.getStringExtra("color") ?: "Color no disponible"
+        val estampada = intent.getBooleanExtra("estampada", false)
+        val tags = intent.getStringArrayListExtra("tags") ?: arrayListOf()
+
+        val ivPrenda = findViewById<ImageView>(R.id.ivPrenda)
+        val tvPrendaNombre = findViewById<TextView>(R.id.tvPrendaNombre)
+        val detailContainer = findViewById<LinearLayout>(R.id.detailContainer)
+        val tvCategoria = findViewById<TextView>(R.id.tvCategoria)
+        val tvColor = findViewById<TextView>(R.id.tvColor)
+        val tvEstampado = findViewById<TextView>(R.id.tvEstampado)
+        val tvTags = findViewById<TextView>(R.id.tvTags)
+        val tvTotalUsos = findViewById<TextView>(R.id.tvTotalUsos)
+        val btnEditar = findViewById<Button>(R.id.btnEditar)
+        val btnEliminar = findViewById<Button>(R.id.btnEliminar)
+
+        detailContainer.visibility = View.VISIBLE
+
+        ivPrenda.setImageResource(imagen)
+        tvPrendaNombre.text = nombre
+        tvCategoria.text = "CATEGORIA: $categoria"
+        tvColor.text = "COLOR: $color"
+        tvEstampado.text = "ESTAMPADO: ${if (estampada) "SÍ" else "N/A"}"
+
+        // aqui es pa que se vea como tagas asi con hashatags
+        val formattedTags = tags.joinToString(" ") { "#${it.uppercase()}" }
+        tvTags.text = "TAGS: $formattedTags"
+
+        tvTotalUsos.text = "TOTAL VECES USADAS: 34"
+
+        // Aquí sera pa la grafica
+        // ivBarChart.setImageResource(R.drawable.tu_grafico_ejemplo)
+
+        btnEditar.setOnClickListener {
+            Toast.makeText(this, "Editar: $nombre", Toast.LENGTH_SHORT).show()
+        }
+
+        btnEliminar.setOnClickListener {
+            Toast.makeText(this, "Eliminar: $nombre", Toast.LENGTH_SHORT).show()
+        }
+
     }
-}
+
+    //pa que se mire bonito
+        private fun Int.dpToPx(context: Context): Int {
+            return (this * context.resources.displayMetrics.density).toInt()
+        }
+
+        private fun DisplayMetrics.widthDimen(dp: Int): Int {
+            return (widthPixels * dp / 360)
+        }
+
+        private fun DisplayMetrics.heightDimen(dp: Int): Int {
+            return (heightPixels * dp / 640)
+        }
+    }

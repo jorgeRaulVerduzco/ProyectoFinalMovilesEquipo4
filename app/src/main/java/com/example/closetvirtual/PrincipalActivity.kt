@@ -3,6 +3,7 @@ package com.example.closetvirtual
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -26,6 +27,11 @@ class PrincipalActivity : AppCompatActivity() {
         val btnAddItem = findViewById<Button>(R.id.btnAddItem)
         btnAddItem.setOnClickListener {
             val intent = Intent(this, RegisrarPrendaActivity::class.java)
+            startActivity(intent)
+        }
+        val btnUser = findViewById<ImageButton>(R.id.btnUser)
+        btnUser.setOnClickListener {
+            val intent = Intent(this, ConfiguracionUsuarioActivity::class.java)
             startActivity(intent)
         }
         cargarPrendasEjemplo()
@@ -94,12 +100,25 @@ class PrincipalActivity : AppCompatActivity() {
     }
 
     private fun addItemView(container: LinearLayout, prenda: Prenda) {
-        val itemView = layoutInflater.inflate(R.layout.activity_detalle, container, false)
+        val itemView = layoutInflater.inflate(R.layout.item_prenda, container, false)
+
         val imageView = itemView.findViewById<ImageView>(R.id.ivPrenda)
         val textView = itemView.findViewById<TextView>(R.id.tvPrendaNombre)
 
         imageView.setImageResource(prenda.imagen)
         textView.text = prenda.nombre
+
+        itemView.setOnClickListener {
+            val intent = Intent(this, DetalleActivity::class.java).apply {
+                putExtra("imagen", prenda.imagen)
+                putExtra("nombre", prenda.nombre)
+                putExtra("categoria", prenda.categoria)
+                putExtra("color", prenda.color)
+                putExtra("estampada", prenda.estampada)
+                putStringArrayListExtra("tags", ArrayList(prenda.tags))
+            }
+            startActivity(intent)
+        }
 
         container.addView(itemView)
     }
