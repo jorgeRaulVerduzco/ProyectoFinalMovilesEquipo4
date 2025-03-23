@@ -11,5 +11,6 @@
     <string name="apellidos">Apellido(s)</string>
     <string name="eMail">E-Mail</string>
     <string name="confirmarContraseña">Confirmar Contraseña</string>
+    <string name="registrarPrenda"><u>REGISTRA UNA NUEVA PRENDA</u></string>
 
 </resources>
