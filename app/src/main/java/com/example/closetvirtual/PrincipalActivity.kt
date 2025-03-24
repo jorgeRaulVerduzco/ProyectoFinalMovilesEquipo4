@@ -34,6 +34,23 @@ class PrincipalActivity : AppCompatActivity() {
             val intent = Intent(this, ConfiguracionUsuarioActivity::class.java)
             startActivity(intent)
         }
+
+        //BOTONES NUEVOS
+        val btnRegistroDiario = findViewById<Button>(R.id.btnRegistroDiario)
+        btnRegistroDiario.setOnClickListener {
+            val intent = Intent(this, CrearOutfit::class.java)
+            startActivity(intent)
+        }
+        val btnRegistroOutfit = findViewById<Button>(R.id.btnCrearOutfit)
+        btnRegistroOutfit.setOnClickListener {
+            val intent = Intent(this, CrearOutfit::class.java)
+            startActivity(intent)
+        }
+        val btnCalendario = findViewById<Button>(R.id.btnCalendario)
+        btnCalendario.setOnClickListener {
+            val intent = Intent(this, CalendarioVisual::class.java)
+            startActivity(intent)
+        }
         cargarPrendasEjemplo()
         mostrarPrendasEnUI()
     }
