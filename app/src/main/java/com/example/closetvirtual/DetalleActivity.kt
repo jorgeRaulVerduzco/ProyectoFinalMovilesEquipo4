@@ -1,6 +1,7 @@
 package com.example.closetvirtual
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.DisplayMetrics
@@ -63,7 +64,15 @@ class DetalleActivity : AppCompatActivity() {
         ivBarChart.setImageResource(R.drawable.grafica)
 
         btnEditar.setOnClickListener {
-            Toast.makeText(this, "Editar: $nombre", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, EditarPrendaActivity::class.java).apply {
+                putExtra("imagen", imagen)
+                putExtra("nombre", nombre)
+                putExtra("categoria", categoria)
+                putExtra("color", color)
+                putExtra("estampada", estampada)
+                putStringArrayListExtra("tags", ArrayList(tags))
+            }
+            startActivity(intent)
         }
 
         btnEliminar.setOnClickListener {
