@@ -43,7 +43,7 @@ class PrincipalActivity : AppCompatActivity() {
         }
 
         findViewById<Button>(R.id.btnOutfits).setOnClickListener {
-            val intent = Intent(this, CrearOutfit::class.java)
+            val intent = Intent(this, TusOutfitsActivity::class.java)
             startActivity(intent)
         }
 
