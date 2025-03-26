@@ -366,6 +366,7 @@
         android:padding="12dp"
         android:layout_gravity="center"/>
     <TextView
+        android:id="@+id/btnRegistrarNuevaPrenda"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/registrarPrenda"

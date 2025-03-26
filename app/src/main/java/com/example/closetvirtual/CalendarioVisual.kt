@@ -22,5 +22,6 @@ class CalendarioVisual : AppCompatActivity() {
             val intent = Intent(this, OutfitSeleccionado::class.java)
             startActivity(intent)
         }
+
     }
 }

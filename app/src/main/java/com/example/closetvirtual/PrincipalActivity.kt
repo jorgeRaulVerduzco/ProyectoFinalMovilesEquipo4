@@ -25,7 +25,6 @@ class PrincipalActivity : AppCompatActivity() {
             insets
         }
 
-        // Button listeners
         findViewById<Button>(R.id.btnAddItem).setOnClickListener {
             val intent = Intent(this, RegisrarPrendaActivity::class.java)
             startActivity(intent)
@@ -36,7 +35,6 @@ class PrincipalActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // New buttons
         findViewById<Button>(R.id.btnRegistroDiario).setOnClickListener {
             val intent = Intent(this, CrearOutfit::class.java)
             startActivity(intent)
@@ -60,13 +58,18 @@ class PrincipalActivity : AppCompatActivity() {
         val topPrendas = listOf(
             Prenda(R.drawable.camisa_azul, "CAMISA AZUL", "TOP", "Azul", false, listOf("casual", "trabajo")),
             Prenda(R.drawable.blusa_rosa, "BLUSA ROSA", "TOP", "Rosa", false, listOf("fiesta", "elegante")),
-            Prenda(R.drawable.camisa_cafe, "CAMISA CAFE", "TOP", "Cafe", true, listOf("casual", "otoño"))
+            Prenda(R.drawable.camisa_cafe, "CAMISA CAFE", "TOP", "Cafe", true, listOf("casual", "otoño")),
+            Prenda(R.drawable.camisa_verde, "CAMISA VERDE", "TOP", "verde", true, listOf("casual", "otoño")),
+            Prenda(R.drawable.camisa_roja, "CAMISA ROJA", "TOP", "Rojo", true, listOf("casual", "otoño")),
+            Prenda(R.drawable.camisa_gris, "CAMISA GRIS", "TOP", "gRIS", true, listOf("elegante", "invierno"))
         )
 
         val bottomPrendas = listOf(
             Prenda(R.drawable.cargo_pants, "CARGO PANTS", "BOTTOM", "Beige", false, listOf("casual", "aventura")),
             Prenda(R.drawable.pants, "PANTS", "BOTTOM", "Azul", false, listOf("casual", "diario")),
-            Prenda(R.drawable.pantalon_negro, "PANTALON NEGRO", "BOTTOM", "Negro", false, listOf("formal", "trabajo"))
+            Prenda(R.drawable.pantalon_negro, "PANTALON NEGRO", "BOTTOM", "Negro", false, listOf("formal", "trabajo")),
+            Prenda(R.drawable.shortsito, "short moderno", "BOTTOM", "Negro", false, listOf("casual", "invierno")),
+            Prenda(R.drawable.jogger, "jogger gris", "BOTTOM", "Gris", false, listOf("fiesta", "invierno"))
         )
 
         val zapatosPrendas = listOf(
