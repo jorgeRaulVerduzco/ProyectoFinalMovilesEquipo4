@@ -24,56 +24,49 @@ class PrincipalActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val btnAddItem = findViewById<Button>(R.id.btnAddItem)
-        btnAddItem.setOnClickListener {
+
+        // Button listeners
+        findViewById<Button>(R.id.btnAddItem).setOnClickListener {
             val intent = Intent(this, RegisrarPrendaActivity::class.java)
             startActivity(intent)
         }
-        val btnUser = findViewById<ImageButton>(R.id.btnUser)
-        btnUser.setOnClickListener {
+
+        findViewById<ImageButton>(R.id.btnUser).setOnClickListener {
             val intent = Intent(this, ConfiguracionUsuarioActivity::class.java)
             startActivity(intent)
         }
 
-        //BOTONES NUEVOS
-        val btnRegistroDiario = findViewById<Button>(R.id.btnRegistroDiario)
-        btnRegistroDiario.setOnClickListener {
+        // New buttons
+        findViewById<Button>(R.id.btnRegistroDiario).setOnClickListener {
             val intent = Intent(this, CrearOutfit::class.java)
             startActivity(intent)
         }
-        val btnRegistroOutfit = findViewById<Button>(R.id.btnCrearOutfit)
-        btnRegistroOutfit.setOnClickListener {
+
+        findViewById<Button>(R.id.btnOutfits).setOnClickListener {
             val intent = Intent(this, CrearOutfit::class.java)
             startActivity(intent)
         }
-        val btnCalendario = findViewById<Button>(R.id.btnCalendario)
-        btnCalendario.setOnClickListener {
+
+        findViewById<Button>(R.id.btnCalendario).setOnClickListener {
             val intent = Intent(this, CalendarioVisual::class.java)
             startActivity(intent)
         }
+
         cargarPrendasEjemplo()
         mostrarPrendasEnUI()
     }
-    private fun cargarPrendasEjemplo() {
 
+    private fun cargarPrendasEjemplo() {
         val topPrendas = listOf(
             Prenda(R.drawable.camisa_azul, "CAMISA AZUL", "TOP", "Azul", false, listOf("casual", "trabajo")),
             Prenda(R.drawable.blusa_rosa, "BLUSA ROSA", "TOP", "Rosa", false, listOf("fiesta", "elegante")),
-            Prenda(R.drawable.camisa_cafe, "CAMISA CAFE", "TOP", "Cafe", true, listOf("casual", "otoño")),
-            Prenda(R.drawable.camisa_verde, "CAMISA VERDE", "TOP", "verde", true, listOf("casual", "otoño")),
-            Prenda(R.drawable.camisa_roja, "CAMISA ROJA", "TOP", "Rojo", true, listOf("casual", "otoño")),
-            Prenda(R.drawable.camisa_gris, "CAMISA GRIS", "TOP", "gRIS", true, listOf("elegante", "invierno"))
-
+            Prenda(R.drawable.camisa_cafe, "CAMISA CAFE", "TOP", "Cafe", true, listOf("casual", "otoño"))
         )
 
         val bottomPrendas = listOf(
             Prenda(R.drawable.cargo_pants, "CARGO PANTS", "BOTTOM", "Beige", false, listOf("casual", "aventura")),
             Prenda(R.drawable.pants, "PANTS", "BOTTOM", "Azul", false, listOf("casual", "diario")),
-            Prenda(R.drawable.pantalon_negro, "PANTALON NEGRO", "BOTTOM", "Negro", false, listOf("formal", "trabajo")),
-            Prenda(R.drawable.shortsito, "short moderno", "BOTTOM", "Negro", false, listOf("casual", "invierno")),
-            Prenda(R.drawable.jogger, "jogger gris", "BOTTOM", "Gris", false, listOf("fiesta", "invierno")),
-
-
+            Prenda(R.drawable.pantalon_negro, "PANTALON NEGRO", "BOTTOM", "Negro", false, listOf("formal", "trabajo"))
         )
 
         val zapatosPrendas = listOf(
@@ -83,11 +76,11 @@ class PrincipalActivity : AppCompatActivity() {
         )
 
         val bodysuitPrendas = listOf(
-            Prenda(R.drawable.ic_launcher_background, "BODYSUIT NEGRO", "BODYSUIT", "Negro", false, listOf("elegante", "formal"))
+            Prenda(R.drawable.bodysuit, "BODYSUIT NEGRO", "BODYSUIT", "Negro", false, listOf("elegante", "formal"))
         )
 
         val accesoriosPrendas = listOf(
-            Prenda(R.drawable.ic_launcher_background, "COLLAR", "ACCESORIOS", "Plateado", false, listOf("elegante", "formal"))
+            Prenda(R.drawable.joya, "ARETE", "ACCESORIOS", "DORADO", false, listOf("elegante", "formal"))
         )
 
         prendas.addAll(topPrendas)
@@ -95,23 +88,28 @@ class PrincipalActivity : AppCompatActivity() {
         prendas.addAll(zapatosPrendas)
         prendas.addAll(bodysuitPrendas)
         prendas.addAll(accesoriosPrendas)
-
     }
 
     private fun mostrarPrendasEnUI() {
         val topContainer = findViewById<LinearLayout>(R.id.topItemsContainer)
         val bottomContainer = findViewById<LinearLayout>(R.id.bottomItemsContainer)
         val zapatosContainer = findViewById<LinearLayout>(R.id.zapatosItemsContainer)
+        val bodysuitContainer = findViewById<LinearLayout>(R.id.bodysuitItemsContainer)
+        val accesoriosContainer = findViewById<LinearLayout>(R.id.accesoriosItemsContainer)
 
         topContainer.removeAllViews()
         bottomContainer.removeAllViews()
         zapatosContainer.removeAllViews()
+        bodysuitContainer.removeAllViews()
+        accesoriosContainer.removeAllViews()
 
         for (prenda in prendas) {
             when (prenda.categoria) {
                 "TOP" -> addItemView(topContainer, prenda)
                 "BOTTOM" -> addItemView(bottomContainer, prenda)
                 "ZAPATOS" -> addItemView(zapatosContainer, prenda)
+                "BODYSUIT" -> addItemView(bodysuitContainer, prenda)
+                "ACCESORIOS" -> addItemView(accesoriosContainer, prenda)
             }
         }
     }
@@ -139,5 +137,4 @@ class PrincipalActivity : AppCompatActivity() {
 
         container.addView(itemView)
     }
-
 }

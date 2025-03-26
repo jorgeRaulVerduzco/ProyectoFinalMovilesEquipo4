@@ -75,7 +75,6 @@
             android:textStyle="bold"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Historial Seccion, falta la grafica -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -110,7 +109,14 @@
             android:textStyle="bold"
             android:layout_marginBottom="8dp"/>
 
-
+        <!-- Add ImageView for the graph -->
+        <ImageView
+            android:id="@+id/ivBarChart"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/grafica"
+            android:layout_marginBottom="16dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -41,7 +41,7 @@
             android:contentDescription="@string/usaurio" />
     </LinearLayout>
 
-     <TextView
+    <TextView
         android:id="@+id/tvTusOutfits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -70,8 +70,7 @@
             android:textColor="@android:color/black"
             android:layout_margin="8dp"
             android:drawablePadding="8dp"
-            android:padding="8dp"
-            android:paintFlags="8" />
+            android:padding="8dp" />
 
         <TextView
             android:id="@+id/tvOutfitInvierno"
@@ -82,8 +81,7 @@
             android:textColor="@android:color/black"
             android:layout_margin="8dp"
             android:drawablePadding="8dp"
-            android:padding="8dp"
-            android:paintFlags="8" />
+            android:padding="8dp" />
 
         <TextView
             android:id="@+id/tvOutfitElegante"
@@ -94,8 +92,7 @@
             android:textColor="@android:color/black"
             android:layout_margin="8dp"
             android:drawablePadding="8dp"
-            android:padding="8dp"
-            android:paintFlags="8" />
+            android:padding="8dp" />
 
         <TextView
             android:id="@+id/tvOutfitFormalComodo"
@@ -106,8 +103,7 @@
             android:textColor="@android:color/black"
             android:layout_margin="8dp"
             android:drawablePadding="8dp"
-            android:padding="8dp"
-            android:paintFlags="8" />
+            android:padding="8dp" />
     </LinearLayout>
 
     <Button

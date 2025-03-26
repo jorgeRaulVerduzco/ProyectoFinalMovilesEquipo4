@@ -58,8 +58,9 @@ class DetalleActivity : AppCompatActivity() {
 
         tvTotalUsos.text = "TOTAL VECES USADAS: 34"
 
-        // Aquí sera pa la grafica
-        // ivBarChart.setImageResource(R.drawable.tu_grafico_ejemplo)
+        // Aquí sera pa la grafica en la cual sera una imagen provicional nomas para el diseño
+        val ivBarChart = findViewById<ImageView>(R.id.ivBarChart)
+        ivBarChart.setImageResource(R.drawable.grafica)
 
         btnEditar.setOnClickListener {
             Toast.makeText(this, "Editar: $nombre", Toast.LENGTH_SHORT).show()
