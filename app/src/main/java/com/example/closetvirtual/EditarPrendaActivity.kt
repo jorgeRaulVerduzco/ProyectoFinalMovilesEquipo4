@@ -51,7 +51,7 @@ class EditarPrendaActivity : AppCompatActivity() {
 
         btnEditarPrenda.setOnClickListener {
 
-            val intent = Intent(this, DetalleActivity::class.java)
+            val intent = Intent(this, PrincipalActivity::class.java)
             startActivity(intent)
         }
     }
