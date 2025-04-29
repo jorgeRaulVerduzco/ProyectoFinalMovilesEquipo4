@@ -1,15 +1,27 @@
 package com.example.closetvirtual
 
+
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 
 class LoginActivity : AppCompatActivity() {
+    // Vistas
+    private lateinit var etUsername: EditText
+    private lateinit var etPassword: EditText
+    private lateinit var btnLogin: Button
+    private lateinit var tvNoAccount: TextView
+
+    // ViewModel
+    private lateinit var vm: UsuarioViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -19,15 +31,40 @@ class LoginActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        val btnLogin = findViewById<Button>(R.id.btnLogin)
+
+        // Inicializar vistas
+        etUsername   = findViewById(R.id.etUsername)
+        etPassword   = findViewById(R.id.etPassword)
+        btnLogin     = findViewById(R.id.btnLogin)
+        tvNoAccount  = findViewById(R.id.tvNoAccount)
+
+        // Inicializar ViewModel
+        vm = ViewModelProvider(this).get(UsuarioViewModel::class.java)
+
         btnLogin.setOnClickListener {
-            val intent = Intent(this, PrincipalActivity::class.java)
-            startActivity(intent)
+            val email = etUsername.text.toString().trim()
+            val pass  = etPassword.text.toString()
+            vm.loginUser(email, pass)
         }
-        val tvNoAccount = findViewById<TextView>(R.id.tvNoAccount)
+
+        vm.loginResult.observe(this) { result ->
+            when (result) {
+                is AuthResult.Loading -> {
+                    btnLogin.isEnabled = false
+                }
+                is AuthResult.Success -> {
+                    startActivity(Intent(this, PrincipalActivity::class.java))
+                    finish()
+                }
+                is AuthResult.Error -> {
+                    btnLogin.isEnabled = true
+                    Toast.makeText(this, "Login falló: ${result.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
         tvNoAccount.setOnClickListener {
-            val intent = Intent(this, RegistrarActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, RegistrarActivity::class.java))
         }
     }
 
