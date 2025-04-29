@@ -57,11 +57,28 @@ class UsuarioViewModel : ViewModel() {
     }
 
 
-    fun loginUser(email: String, password: String) {
+    fun loginUser(identifier: String, password: String) {
         _loginResult.value = AuthResult.Loading
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                auth.signInWithEmailAndPassword(email, password).await()
+                // Si no tiene '@', asumimos que es nombre de usuario
+                val emailToUse = if ('@' in identifier) {
+                    identifier
+                } else {
+                    // Buscamos el email en Firestore
+                    val query = db.collection("usuarios")
+                        .whereEqualTo("usuario", identifier)
+                        .get()
+                        .await()
+                    if (query.isEmpty) {
+                        throw Exception("Usuario no registrado")
+                    }
+                    query.documents[0].getString("email")
+                        ?: throw Exception("Email no encontrado para ese usuario")
+                }
+
+                // Autenticamos con el email obtenido
+                auth.signInWithEmailAndPassword(emailToUse, password).await()
                 _loginResult.postValue(AuthResult.Success)
             } catch (e: Exception) {
                 _loginResult.postValue(AuthResult.Error(e.localizedMessage ?: "Error desconocido"))

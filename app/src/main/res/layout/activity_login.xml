@@ -52,10 +52,10 @@
             android:layout_marginBottom="64dp" />
 
         <EditText
-            android:id="@+id/etUsername"
+            android:id="@+id/etIdentifier"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/eMail"
+            android:hint="@string/email_o_usuario"
             android:padding="16dp"
             android:background="@android:drawable/editbox_background"
             android:layout_marginBottom="16dp" />

@@ -12,10 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
-
 class LoginActivity : AppCompatActivity() {
     // Vistas
-    private lateinit var etUsername: EditText
+    private lateinit var etIdentifier: EditText
     private lateinit var etPassword: EditText
     private lateinit var btnLogin: Button
     private lateinit var tvNoAccount: TextView
@@ -32,26 +31,22 @@ class LoginActivity : AppCompatActivity() {
             insets
         }
 
-        // Inicializar vistas
-        etUsername   = findViewById(R.id.etUsername)
+        etIdentifier = findViewById(R.id.etIdentifier)
         etPassword   = findViewById(R.id.etPassword)
         btnLogin     = findViewById(R.id.btnLogin)
         tvNoAccount  = findViewById(R.id.tvNoAccount)
 
-        // Inicializar ViewModel
         vm = ViewModelProvider(this).get(UsuarioViewModel::class.java)
 
         btnLogin.setOnClickListener {
-            val email = etUsername.text.toString().trim()
-            val pass  = etPassword.text.toString()
-            vm.loginUser(email, pass)
+            val identifier = etIdentifier.text.toString().trim()
+            val pass       = etPassword.text.toString()
+            vm.loginUser(identifier, pass)
         }
 
         vm.loginResult.observe(this) { result ->
             when (result) {
-                is AuthResult.Loading -> {
-                    btnLogin.isEnabled = false
-                }
+                is AuthResult.Loading -> btnLogin.isEnabled = false
                 is AuthResult.Success -> {
                     startActivity(Intent(this, PrincipalActivity::class.java))
                     finish()
@@ -67,5 +62,4 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this, RegistrarActivity::class.java))
         }
     }
-
 }

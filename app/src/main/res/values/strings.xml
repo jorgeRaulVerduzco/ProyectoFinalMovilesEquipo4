@@ -12,5 +12,6 @@
     <string name="eMail">E-Mail</string>
     <string name="confirmarContraseña">Confirmar Contraseña</string>
     <string name="registrarPrenda"><u>REGISTRA UNA NUEVA PRENDA</u></string>
+    <string name="email_o_usuario">Email/Usuario</string>
 
 </resources>
