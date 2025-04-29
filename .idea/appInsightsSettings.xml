@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.closetvirtual" />
+                  <option name="mobileSdkAppId" value="1:358177396902:android:b23cc143ee280b951bfc67" />
+                  <option name="projectId" value="proyecofinalequipo4" />
+                  <option name="projectNumber" value="358177396902" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

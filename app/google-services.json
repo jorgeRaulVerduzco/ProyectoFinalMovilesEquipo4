@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "358177396902",
+    "project_id": "proyecofinalequipo4",
+    "storage_bucket": "proyecofinalequipo4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:358177396902:android:b23cc143ee280b951bfc67",
+        "android_client_info": {
+          "package_name": "com.example.closetvirtual"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJLdYYSEBrEemFyrHRDy8QlaQUu8_FJ7E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
