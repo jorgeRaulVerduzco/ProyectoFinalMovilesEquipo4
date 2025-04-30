@@ -13,5 +13,11 @@
     <string name="confirmarContraseña">Confirmar Contraseña</string>
     <string name="registrarPrenda"><u>REGISTRA UNA NUEVA PRENDA</u></string>
     <string name="email_o_usuario">Email/Usuario</string>
-
+    <string-array name="categorias_array">
+        <item>TOP</item>
+        <item>BOTTOM</item>
+        <item>ZAPATOS</item>
+        <item>BODYSUIT</item>
+        <item>ACCESORIOS</item>
+    </string-array>
 </resources>

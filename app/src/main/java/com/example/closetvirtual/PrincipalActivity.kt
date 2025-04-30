@@ -1,19 +1,21 @@
 package com.example.closetvirtual
-
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 
 class PrincipalActivity : AppCompatActivity() {
-    private val prendas = ArrayList<Prenda>()
+    private lateinit var vm: PrendaViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,119 +27,66 @@ class PrincipalActivity : AppCompatActivity() {
             insets
         }
 
+        vm = ViewModelProvider(this).get(PrendaViewModel::class.java)
+        vm.prendas.observe(this, Observer { prendas ->
+            mostrarPrendasEnUI(prendas)
+        })
+
         findViewById<Button>(R.id.btnAddItem).setOnClickListener {
-            val intent = Intent(this, RegisrarPrendaActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, RegisrarPrendaActivity::class.java))
         }
-
         findViewById<ImageButton>(R.id.btnUser).setOnClickListener {
-            val intent = Intent(this, ConfiguracionUsuarioActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, ConfiguracionUsuarioActivity::class.java))
         }
-
         findViewById<Button>(R.id.btnRegistroDiario).setOnClickListener {
-            val intent = Intent(this, CrearOutfit::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, CrearOutfit::class.java))
         }
-
         findViewById<Button>(R.id.btnOutfits).setOnClickListener {
-            val intent = Intent(this, TusOutfitsActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, TusOutfitsActivity::class.java))
         }
-
         findViewById<Button>(R.id.btnCalendario).setOnClickListener {
-            val intent = Intent(this, CalendarioVisual::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, CalendarioVisual::class.java))
         }
-
-        cargarPrendasEjemplo()
-        mostrarPrendasEnUI()
     }
 
-    private fun cargarPrendasEjemplo() {
-        val topPrendas = listOf(
-            Prenda(R.drawable.camisa_azul, "CAMISA AZUL", "TOP", "Azul", false, listOf("casual", "trabajo")),
-            Prenda(R.drawable.blusa_rosa, "BLUSA ROSA", "TOP", "Rosa", false, listOf("fiesta", "elegante")),
-            Prenda(R.drawable.camisa_cafe, "CAMISA CAFE", "TOP", "Cafe", true, listOf("casual", "otoño")),
-            Prenda(R.drawable.camisa_verde, "CAMISA VERDE", "TOP", "verde", true, listOf("casual", "otoño")),
-            Prenda(R.drawable.camisa_roja, "CAMISA ROJA", "TOP", "Rojo", true, listOf("casual", "otoño")),
-            Prenda(R.drawable.camisa_gris, "CAMISA GRIS", "TOP", "gRIS", true, listOf("elegante", "invierno"))
-        )
+    private fun mostrarPrendasEnUI(prendas: List<Prenda>) {
+        val topContainer       = findViewById<LinearLayout>(R.id.topItemsContainer)
+        val bottomContainer    = findViewById<LinearLayout>(R.id.bottomItemsContainer)
+        val zapatosContainer   = findViewById<LinearLayout>(R.id.zapatosItemsContainer)
+        val bodysuitContainer  = findViewById<LinearLayout>(R.id.bodysuitItemsContainer)
+        val accesoriosContainer= findViewById<LinearLayout>(R.id.accesoriosItemsContainer)
 
-        val bottomPrendas = listOf(
-            Prenda(R.drawable.cargo_pants, "CARGO PANTS", "BOTTOM", "Beige", false, listOf("casual", "aventura")),
-            Prenda(R.drawable.pants, "PANTS", "BOTTOM", "Azul", false, listOf("casual", "diario")),
-            Prenda(R.drawable.pantalon_negro, "PANTALON NEGRO", "BOTTOM", "Negro", false, listOf("formal", "trabajo")),
-            Prenda(R.drawable.shortsito, "short moderno", "BOTTOM", "Negro", false, listOf("casual", "invierno")),
-            Prenda(R.drawable.jogger, "jogger gris", "BOTTOM", "Gris", false, listOf("fiesta", "invierno"))
-        )
+        listOf(topContainer, bottomContainer, zapatosContainer, bodysuitContainer, accesoriosContainer)
+            .forEach { it.removeAllViews() }
 
-        val zapatosPrendas = listOf(
-            Prenda(R.drawable.coloridos, "COLORIDOS", "ZAPATOS", "Multicolor", false, listOf("casual", "deporte")),
-            Prenda(R.drawable.converse, "CONVERSE", "ZAPATOS", "Rojo", false, listOf("casual", "juvenil")),
-            Prenda(R.drawable.nike_rojos, "NIKE ROJOS", "ZAPATOS", "Rojo", false, listOf("deporte", "running"))
-        )
-
-        val bodysuitPrendas = listOf(
-            Prenda(R.drawable.bodysuit, "BODYSUIT NEGRO", "BODYSUIT", "Negro", false, listOf("elegante", "formal"))
-        )
-
-        val accesoriosPrendas = listOf(
-            Prenda(R.drawable.joya, "ARETE", "ACCESORIOS", "DORADO", false, listOf("elegante", "formal"))
-        )
-
-        prendas.addAll(topPrendas)
-        prendas.addAll(bottomPrendas)
-        prendas.addAll(zapatosPrendas)
-        prendas.addAll(bodysuitPrendas)
-        prendas.addAll(accesoriosPrendas)
-    }
-
-    private fun mostrarPrendasEnUI() {
-        val topContainer = findViewById<LinearLayout>(R.id.topItemsContainer)
-        val bottomContainer = findViewById<LinearLayout>(R.id.bottomItemsContainer)
-        val zapatosContainer = findViewById<LinearLayout>(R.id.zapatosItemsContainer)
-        val bodysuitContainer = findViewById<LinearLayout>(R.id.bodysuitItemsContainer)
-        val accesoriosContainer = findViewById<LinearLayout>(R.id.accesoriosItemsContainer)
-
-        topContainer.removeAllViews()
-        bottomContainer.removeAllViews()
-        zapatosContainer.removeAllViews()
-        bodysuitContainer.removeAllViews()
-        accesoriosContainer.removeAllViews()
-
-        for (prenda in prendas) {
-            when (prenda.categoria) {
-                "TOP" -> addItemView(topContainer, prenda)
-                "BOTTOM" -> addItemView(bottomContainer, prenda)
-                "ZAPATOS" -> addItemView(zapatosContainer, prenda)
-                "BODYSUIT" -> addItemView(bodysuitContainer, prenda)
-                "ACCESORIOS" -> addItemView(accesoriosContainer, prenda)
+        prendas.forEach { prenda ->
+            when (prenda.categoria.uppercase()) {
+                "TOP"       -> addItemView(topContainer, prenda)
+                "BOTTOM"    -> addItemView(bottomContainer, prenda)
+                "ZAPATOS"   -> addItemView(zapatosContainer, prenda)
+                "BODYSUIT"  -> addItemView(bodysuitContainer, prenda)
+                "ACCESORIOS"-> addItemView(accesoriosContainer, prenda)
             }
         }
     }
 
     private fun addItemView(container: LinearLayout, prenda: Prenda) {
         val itemView = layoutInflater.inflate(R.layout.item_prenda, container, false)
-
         val imageView = itemView.findViewById<ImageView>(R.id.ivPrenda)
-        val textView = itemView.findViewById<TextView>(R.id.tvPrendaNombre)
+        val textView  = itemView.findViewById<TextView>(R.id.tvPrendaNombre)
 
-        imageView.setImageResource(prenda.imagen)
+        // Carga la imagen desde el URI almacenado en Firestore
+        if (prenda.imagen.isNotEmpty()) {
+            imageView.setImageURI(Uri.parse(prenda.imagen))
+        }
         textView.text = prenda.nombre
 
         itemView.setOnClickListener {
-            val intent = Intent(this, DetalleActivity::class.java).apply {
-                putExtra("imagen", prenda.imagen)
-                putExtra("nombre", prenda.nombre)
-                putExtra("categoria", prenda.categoria)
-                putExtra("color", prenda.color)
-                putExtra("estampada", prenda.estampada)
-                putStringArrayListExtra("tags", ArrayList(prenda.tags))
+            Intent(this, DetalleActivity::class.java).apply {
+                putExtra("prendaId", prenda.id)
+                startActivity(this)
             }
-            startActivity(intent)
         }
-
         container.addView(itemView)
     }
 }
