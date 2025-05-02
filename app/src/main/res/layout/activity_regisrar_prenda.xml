@@ -8,7 +8,6 @@
     android:orientation="vertical"
     android:background="@android:color/white"
     tools:context=".RegisrarPrendaActivity">
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,127 +44,143 @@
             android:layout_height="48dp"
             android:src="@drawable/user_iconn"
             android:background="?attr/selectableItemBackgroundBorderless"
-          />
+            />
     </LinearLayout>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="vertical"
-        android:padding="24dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="REGISTRAR PRENDA"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            android:layout_marginBottom="32dp"
-            android:layout_gravity="center_horizontal" />
-
-        <EditText
-            android:id="@+id/etNombrePrenda"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nombre Prenda"
-            android:padding="16dp"
-            android:background="@android:drawable/editbox_background"
-            android:layout_marginBottom="16dp" />
-
-        <EditText
-            android:id="@+id/etColor"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Color"
-            android:padding="16dp"
-            android:background="@android:drawable/editbox_background"
-            android:layout_marginBottom="16dp" />
-
-        <EditText
-            android:id="@+id/etTags"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="#Tags"
-            android:padding="16dp"
-            android:background="@android:drawable/editbox_background"
-            android:layout_marginBottom="16dp" />
-
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@android:drawable/editbox_background"
-            android:layout_marginBottom="16dp">
-
-            <Spinner
-                android:id="@+id/ListaDeCategoria"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:entries="@array/categorias_array"
-                android:padding="16dp"
-                android:popupBackground="@android:color/white" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:background="@android:drawable/editbox_background"
-            android:layout_marginBottom="24dp">
-
-            <EditText
-                android:id="@+id/etImagePath"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Image.jpg"
-                android:padding="16dp"
-                android:background="@null" />
-
-            <ImageButton
-                android:id="@+id/ibSelectImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_gallery"
-                android:background="@null"
-                android:padding="8dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="32dp">
+            android:orientation="vertical"
+            android:padding="24dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="¿Es Estampada?"
-                android:textSize="16sp"
-                android:layout_marginEnd="20dp"
-                android:layout_gravity="center_vertical" />
+                android:text="REGISTRAR PRENDA"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:layout_marginBottom="32dp"
+                android:layout_gravity="center_horizontal" />
 
-            <CheckBox
-                android:id="@+id/cbEstampadaSi"
-                android:layout_width="wrap_content"
+            <!-- Preview de imagen -->
+            <ImageView
+                android:id="@+id/previewImage"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                android:background="#EFEFEF"
+                android:visibility="gone"
+                android:layout_marginBottom="16dp"/>
+
+            <EditText
+                android:id="@+id/etNombrePrenda"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="32dp" />
+                android:hint="Nombre Prenda"
+                android:padding="16dp"
+                android:background="@android:drawable/editbox_background"
+                android:layout_marginBottom="16dp" />
+
+            <EditText
+                android:id="@+id/etColor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Color"
+                android:padding="16dp"
+                android:background="@android:drawable/editbox_background"
+                android:layout_marginBottom="16dp" />
+
+            <EditText
+                android:id="@+id/etTags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="#Tags (separados por comas)"
+                android:padding="16dp"
+                android:background="@android:drawable/editbox_background"
+                android:layout_marginBottom="16dp" />
 
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@android:drawable/editbox_background"
+                android:layout_marginBottom="16dp">
+
+                <Spinner
+                    android:id="@+id/ListaDeCategoria"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:entries="@array/categorias_array"
+                    android:padding="16dp"
+                    android:popupBackground="@android:color/white" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@android:drawable/editbox_background"
+                android:layout_marginBottom="24dp">
+
+                <EditText
+                    android:id="@+id/etImagePath"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Image.jpg"
+                    android:padding="16dp"
+                    android:editable="false"
+                    android:focusable="false"
+                    android:background="@null" />
+
+                <ImageButton
+                    android:id="@+id/ibSelectImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@android:drawable/ic_menu_gallery"
+                    android:background="@null"
+                    android:padding="8dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="32dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="¿Es Estampada?"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_gravity="center_vertical" />
+
+                <CheckBox
+                    android:id="@+id/cbEstampadaSi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="32dp" />
+
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnRegistrarPrenda"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/black"
+                android:text="REGISTRAR"
+                android:textColor="@android:color/white"
+                android:padding="16dp" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btnRegistrarPrenda"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/black"
-            android:text="REGISTRAR"
-            android:textColor="@android:color/white"
-            android:padding="16dp" />
-    </LinearLayout>
+    </ScrollView>
 </LinearLayout>

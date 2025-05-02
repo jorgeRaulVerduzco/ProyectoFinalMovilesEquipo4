@@ -7,16 +7,17 @@ data class Prenda(
     var categoria: String = "",
     var color: String = "",
     var estampada: Boolean = false,
-    var tags: List<String> = emptyList()
+    var tags: List<String> = emptyList(),
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(
-            "imagen"    to imagen,
-            "nombre"    to nombre,
+            "id" to id,
+            "imagen" to imagen,
+            "nombre" to nombre,
             "categoria" to categoria,
-            "color"     to color,
+            "color" to color,
             "estampada" to estampada,
-            "tags"      to tags
+            "tags" to tags
         )
     }
 }
