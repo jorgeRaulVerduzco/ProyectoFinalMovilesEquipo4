@@ -16,8 +16,13 @@ class PrendaViewModel : ViewModel() {
     private val db = Firebase.firestore
     private val _prendas = MutableLiveData<List<Prenda>>(emptyList())
     val prendas: LiveData<List<Prenda>> = _prendas
+
+    // Lista completa de prendas antes de filtrar
+    private var prendasCompletas: List<Prenda> = emptyList()
+
     private val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean> = _isLoading
+
     init {
         obtenerPrendas()
     }
@@ -31,6 +36,9 @@ class PrendaViewModel : ViewModel() {
                     val prenda = doc.toObject(Prenda::class.java)
                     prenda?.apply { id = doc.id } // Aseguramos que el ID se establezca correctamente
                 }
+                // Guardar la lista completa
+                prendasCompletas = lista
+                // Inicialmente, mostrar todas las prendas
                 _prendas.postValue(lista)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -38,6 +46,25 @@ class PrendaViewModel : ViewModel() {
                 _isLoading.postValue(false)
             }
         }
+    }
+
+    // Nueva función para filtrar prendas
+    fun filtrarPrendas(query: String) {
+        if (query.isEmpty()) {
+            // Si la consulta está vacía, mostrar todas las prendas
+            _prendas.value = prendasCompletas
+            return
+        }
+
+        val queryLowerCase = query.lowercase()
+        val prendasFiltradas = prendasCompletas.filter { prenda ->
+            // Buscar por nombre
+            prenda.nombre.lowercase().contains(queryLowerCase) ||
+                    // Buscar por tags
+                    prenda.tags.any { tag -> tag.lowercase().contains(queryLowerCase) }
+        }
+
+        _prendas.value = prendasFiltradas
     }
 
     fun agregarPrenda(prenda: Prenda) {
@@ -55,8 +82,8 @@ class PrendaViewModel : ViewModel() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }  finally {
-            _isLoading.postValue(false)
-        }
+                _isLoading.postValue(false)
+            }
         }
     }
 
@@ -72,7 +99,6 @@ class PrendaViewModel : ViewModel() {
             }
         }
     }
-
 
     fun actualizarPrenda(prenda: Prenda) {
         _isLoading.value = true
@@ -108,4 +134,5 @@ class PrendaViewModel : ViewModel() {
             }
         }
     }
+
 }

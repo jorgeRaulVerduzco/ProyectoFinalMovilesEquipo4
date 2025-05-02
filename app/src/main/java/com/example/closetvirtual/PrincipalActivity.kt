@@ -1,7 +1,10 @@
 package com.example.closetvirtual
+
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -9,6 +12,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import android.widget.Button
+import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -19,6 +23,7 @@ import com.bumptech.glide.Glide
 class PrincipalActivity : AppCompatActivity() {
     private lateinit var vm: PrendaViewModel
     private var progressDialog: ProgressDialog? = null
+    private lateinit var searchEditText: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +36,25 @@ class PrincipalActivity : AppCompatActivity() {
         }
 
         vm = ViewModelProvider(this).get(PrendaViewModel::class.java)
+
+        // Inicializar el campo de búsqueda
+        searchEditText = findViewById(R.id.etSearch)
+
+        // Configurar el TextWatcher para la búsqueda en tiempo real
+        searchEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // No necesario implementar
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Filtrar prendas cuando cambia el texto
+                vm.filtrarPrendas(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // No necesario implementar
+            }
+        })
 
         // Observar cambios en la carga
         vm.isLoading.observe(this, Observer { isLoading ->
@@ -67,6 +91,9 @@ class PrincipalActivity : AppCompatActivity() {
         super.onResume()
         // Refrescar la lista de prendas cada vez que se vuelve a la actividad
         vm.obtenerPrendas()
+
+        // Limpiar el campo de búsqueda cuando se regresa a la actividad
+        searchEditText.setText("")
     }
 
     private fun mostrarProgressDialog() {
@@ -97,9 +124,15 @@ class PrincipalActivity : AppCompatActivity() {
         // Agrupar prendas por categoría
         val prendasAgrupadas = prendas.groupBy { it.categoria.uppercase() }
 
-        // Añadir mensaje si no hay prendas
+        // Añadir mensaje si no hay prendas o si el filtro no produjo resultados
         if (prendas.isEmpty()) {
-            Toast.makeText(this, "No hay prendas registradas. ¡Agrega tu primera prenda!", Toast.LENGTH_LONG).show()
+            if (searchEditText.text.isNotEmpty()) {
+                // El filtro no produjo resultados
+                Toast.makeText(this, "No se encontraron prendas con ese criterio de búsqueda", Toast.LENGTH_SHORT).show()
+            } else {
+                // No hay prendas registradas
+                Toast.makeText(this, "No hay prendas registradas. ¡Agrega tu primera prenda!", Toast.LENGTH_LONG).show()
+            }
         }
 
         // Añadir prendas a sus respectivos contenedores
