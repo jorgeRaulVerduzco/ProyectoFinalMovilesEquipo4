@@ -31,50 +31,46 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:visibility="visible">
+        android:paddingRight="16dp">
 
         <TextView
             android:id="@+id/tvCategoria"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="CATEGORIA: BLUSA"
             android:textSize="16sp"
             android:gravity="center"
             android:textStyle="bold"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp" />
 
         <TextView
             android:id="@+id/tvColor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="COLOR: ROSA"
             android:textSize="16sp"
             android:gravity="center"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp" />
 
         <TextView
             android:id="@+id/tvEstampado"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ESTAMPADO: N/A"
             android:textSize="16sp"
             android:gravity="center"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp" />
 
         <TextView
             android:id="@+id/tvTags"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="TAGS: #BLUSA #ROSA"
             android:textSize="16sp"
             android:gravity="center"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
+        <!-- Historial -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -82,13 +78,13 @@
             android:textSize="18sp"
             android:gravity="center"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
         <TextView
             android:id="@+id/tvTotalUsos"
@@ -98,7 +94,7 @@
             android:textSize="16sp"
             android:gravity="center"
             android:textStyle="bold"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
         <TextView
             android:layout_width="match_parent"
@@ -107,16 +103,15 @@
             android:textSize="16sp"
             android:gravity="center"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp" />
 
-        <!-- Add ImageView for the graph -->
         <ImageView
             android:id="@+id/ivBarChart"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="fitCenter"
             android:src="@drawable/grafica"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -134,7 +129,7 @@
                 android:textColor="@android:color/white"
                 android:background="@android:color/black"
                 android:layout_marginEnd="4dp"
-                android:padding="12dp"/>
+                android:padding="12dp" />
 
             <Button
                 android:id="@+id/btnEliminar"
@@ -145,7 +140,7 @@
                 android:textColor="@android:color/white"
                 android:background="@android:color/black"
                 android:layout_marginStart="4dp"
-                android:padding="12dp"/>
+                android:padding="12dp" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -72,4 +72,40 @@ class PrendaViewModel : ViewModel() {
             }
         }
     }
+
+
+    fun actualizarPrenda(prenda: Prenda) {
+        _isLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                db.collection("prendas")
+                    .document(prenda.id)
+                    .set(prenda.toMap())
+                    .await()
+                obtenerPrendas()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _isLoading.postValue(false)
+            }
+        }
+    }
+
+    fun eliminarPrenda(id: String, onComplete: (() -> Unit)? = null) {
+        _isLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                db.collection("prendas")
+                    .document(id)
+                    .delete()
+                    .await()
+                onComplete?.invoke()
+                obtenerPrendas()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                _isLoading.postValue(false)
+            }
+        }
+    }
 }

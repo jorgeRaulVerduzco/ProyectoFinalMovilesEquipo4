@@ -14,9 +14,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 
 class DetalleActivity : AppCompatActivity() {
     private lateinit var vm: PrendaViewModel
+    private var currentPrenda: Prenda? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,43 +31,65 @@ class DetalleActivity : AppCompatActivity() {
         }
 
         vm = ViewModelProvider(this).get(PrendaViewModel::class.java)
+        val btnEditar = findViewById<Button>(R.id.btnEditar)
+        val btnEliminar = findViewById<Button>(R.id.btnEliminar)
+
         val prendaId = intent.getStringExtra("prendaId")
-        if (prendaId != null) {
-            vm.obtenerPrendaPorId(prendaId) { prenda: Prenda? ->
-                prenda?.let { updateUIWithPrenda(it) }
+        prendaId?.let { id ->
+            vm.obtenerPrendaPorId(id) { prenda ->
+                prenda?.let {
+                    currentPrenda = it
+                    updateUIWithPrenda(it)
+                }
             }
         }
 
-        findViewById<Button>(R.id.btnEditar).setOnClickListener {
-            // Implementar edición...
+        btnEditar.setOnClickListener {
+            currentPrenda?.let { prenda ->
+                startActivity(Intent(this, EditarPrendaActivity::class.java).apply {
+                    putExtra("prendaId", prenda.id)
+                })
+            }
         }
-        findViewById<Button>(R.id.btnEliminar).setOnClickListener {
-            Toast.makeText(this, "Eliminar prenda", Toast.LENGTH_SHORT).show()
+
+        btnEliminar.setOnClickListener {
+            currentPrenda?.let { prenda ->
+                vm.eliminarPrenda(prenda.id) {
+                    runOnUiThread {
+                        Toast.makeText(this, "Prenda eliminada", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Refrescar datos si venimos de edición
+        currentPrenda?.id?.let { id ->
+            vm.obtenerPrendaPorId(id) { prenda ->
+                prenda?.let { updateUIWithPrenda(it) }
+            }
         }
     }
 
     private fun updateUIWithPrenda(prenda: Prenda) {
         runOnUiThread {
             val ivPrenda    = findViewById<ImageView>(R.id.ivPrenda)
-            val tvNombre    = findViewById<TextView>(R.id.tvPrendaNombre)
-            val tvCategoria = findViewById<TextView>(R.id.tvCategoria)
-            val tvColor     = findViewById<TextView>(R.id.tvColor)
-            val tvEstampado = findViewById<TextView>(R.id.tvEstampado)
-            val tvTags      = findViewById<TextView>(R.id.tvTags)
-            val tvUsos      = findViewById<TextView>(R.id.tvTotalUsos)
-            val ivGrafica   = findViewById<ImageView>(R.id.ivBarChart)
+            Glide.with(this)
+                .load(prenda.imagen)
+                .centerCrop()
+                .into(ivPrenda)
 
-            if (prenda.imagen.isNotEmpty()) {
-                ivPrenda.setImageURI(Uri.parse(prenda.imagen))
-            }
-            tvNombre.text    = prenda.nombre
-            tvCategoria.text = "CATEGORÍA: ${prenda.categoria}"
-            tvColor.text     = "COLOR: ${prenda.color}"
-            tvEstampado.text = "ESTAMPADO: ${if (prenda.estampada) "SÍ" else "N/A"}"
-            tvTags.text      = prenda.tags.joinToString(" ") { "#${it.uppercase()}" }
-            tvUsos.text      = "TOTAL VECES USADAS: 34"
-            // Mantén la gráfica de ejemplo
-            ivGrafica.setImageResource(R.drawable.grafica)
+            findViewById<TextView>(R.id.tvPrendaNombre).text    = prenda.nombre
+            findViewById<TextView>(R.id.tvCategoria).text      = "CATEGORÍA: ${prenda.categoria}"
+            findViewById<TextView>(R.id.tvColor).text          = "COLOR: ${prenda.color}"
+            findViewById<TextView>(R.id.tvEstampado).text      = "ESTAMPADO: ${if (prenda.estampada) "SÍ" else "N/A"}"
+            findViewById<TextView>(R.id.tvTags).text           = prenda.tags.joinToString(" ") { "#${it.uppercase()}" }
+            findViewById<TextView>(R.id.tvTotalUsos).text      = "TOTAL VECES USADAS: 34"
+            findViewById<ImageView>(R.id.ivBarChart)
+                .setImageResource(R.drawable.grafica)
         }
     }
     }
