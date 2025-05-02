@@ -35,7 +35,13 @@ class EditarPrendaActivity : AppCompatActivity() {
             insets
         }
 
-        initCloudinary()
+        // Inicialización segura de Cloudinary
+        try {
+            MediaManager.get()
+        } catch (e: Exception) {
+            initCloudinary()
+        }
+
         vm = ViewModelProvider(this).get(PrendaViewModel::class.java)
 
         val etNombre      = findViewById<EditText>(R.id.etNombrePrenda)
@@ -105,23 +111,38 @@ class EditarPrendaActivity : AppCompatActivity() {
                 prenda.estampada = estampada
 
                 if (selectedImageUri != null) {
-                    MediaManager.get().upload(selectedImageUri)
-                        .unsigned(UPLOAD_PRESET)
-                        .callback(object : UploadCallback {
-                            override fun onSuccess(requestId: String, resultData: Map<*, *>) {
-                                prenda.imagen = resultData["secure_url"] as String
-                                vm.actualizarPrenda(prenda)
-                                finishUpdate()
-                            }
-                            override fun onError(requestId: String, error: ErrorInfo) {
-                                hideProgress()
-                                Toast.makeText(this@EditarPrendaActivity, "Error al subir imagen: ${'$'}{error.description}", Toast.LENGTH_LONG).show()
-                            }
-                            override fun onStart(requestId: String) {}
-                            override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {}
-                            override fun onReschedule(requestId: String, error: ErrorInfo?) {}
-                        })
-                        .dispatch()
+                    try {
+                        MediaManager.get().upload(selectedImageUri)
+                            .unsigned(UPLOAD_PRESET)
+                            .callback(object : UploadCallback {
+                                override fun onStart(requestId: String) {}
+                                override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {}
+
+                                override fun onSuccess(requestId: String, resultData: Map<*, *>) {
+                                    hideProgress()
+                                    // Validar URL vacía
+                                    val newUrl = (resultData["secure_url"] as? String).orEmpty()
+                                    if (newUrl.isEmpty()) {
+                                        Toast.makeText(this@EditarPrendaActivity, "URL vacía", Toast.LENGTH_LONG).show()
+                                        return
+                                    }
+                                    prenda.imagen = newUrl
+                                    vm.actualizarPrenda(prenda)
+                                    finishUpdate()
+                                }
+
+                                override fun onError(requestId: String, error: ErrorInfo) {
+                                    hideProgress()
+                                    Toast.makeText(this@EditarPrendaActivity, "Error al subir imagen: ${error.description}", Toast.LENGTH_LONG).show()
+                                }
+
+                                override fun onReschedule(requestId: String?, error: ErrorInfo?) {}
+                            })
+                            .dispatch()
+                    } catch (e: Exception) {
+                        hideProgress()
+                        Toast.makeText(this@EditarPrendaActivity, "Error en la subida: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
                 } else {
                     vm.actualizarPrenda(prenda)
                     finishUpdate()
@@ -131,13 +152,18 @@ class EditarPrendaActivity : AppCompatActivity() {
     }
 
     private fun initCloudinary() {
-        val config = mapOf("cloud_name" to CLOUD_NAME)
-        MediaManager.init(applicationContext, config)
+        try {
+            val config = mapOf("cloud_name" to CLOUD_NAME)
+            MediaManager.init(applicationContext, config)
+        } catch (e: Exception) {
+            // Logging opcional
+        }
     }
 
     private fun showProgress(msg: String) {
         if (progressDialog == null) progressDialog = ProgressDialog(this).apply {
-            isIndeterminate = true; setCancelable(false)
+            isIndeterminate = true
+            setCancelable(false)
         }
         progressDialog?.setMessage(msg)
         progressDialog?.show()
@@ -155,5 +181,10 @@ class EditarPrendaActivity : AppCompatActivity() {
                 findViewById<EditText>(R.id.etImagePath).setText(it.toString())
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        hideProgress()
     }
 }
