@@ -77,7 +77,7 @@ class PrincipalActivity : AppCompatActivity() {
             startActivity(Intent(this, ConfiguracionUsuarioActivity::class.java))
         }
         findViewById<Button>(R.id.btnRegistroDiario).setOnClickListener {
-            startActivity(Intent(this, CrearOutfit::class.java))
+            startActivity(Intent(this, TusRegistrosDiariosActivity::class.java))
         }
         findViewById<Button>(R.id.btnOutfits).setOnClickListener {
             startActivity(Intent(this, TusOutfitsActivity::class.java))
