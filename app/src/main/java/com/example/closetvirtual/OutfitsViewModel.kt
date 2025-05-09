@@ -10,6 +10,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.UUID
 
 class OutfitsViewModel : ViewModel() {
@@ -93,10 +96,39 @@ class OutfitsViewModel : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                // Guardar el outfit
                 db.collection("outfits")
                     .document(nuevoOutfit.id)
                     .set(nuevoOutfit.toMap())
                     .await()
+
+                // Actualizar los contadores de uso para cada prenda
+                val fechaActual = SimpleDateFormat("MM/yyyy", Locale.getDefault()).format(Date())
+
+                for (prenda in prendas) {
+                    // Obtener la prenda actual de Firestore
+                    val prendaDoc = db.collection("prendas").document(prenda.id).get().await()
+                    val prendaData = prendaDoc.toObject(Prenda::class.java)
+
+                    if (prendaData != null) {
+                        // Actualizar contadores
+                        val usosTotales = (prendaData.usosTotales ?: 0) + 1
+                        val usosOutfits = (prendaData.usosOutfits ?: 0) + 1
+
+                        // Actualizar usos por mes
+                        val usosPorMes = prendaData.usosPorMes?.toMutableMap() ?: mutableMapOf()
+                        usosPorMes[fechaActual] = (usosPorMes[fechaActual] ?: 0) + 1
+
+                        // Actualizar la prenda en Firestore
+                        db.collection("prendas").document(prenda.id).update(
+                            mapOf(
+                                "usosTotales" to usosTotales,
+                                "usosOutfits" to usosOutfits,
+                                "usosPorMes" to usosPorMes
+                            )
+                        ).await()
+                    }
+                }
 
                 // Actualizar la lista después de agregar
                 withContext(Dispatchers.Main) {

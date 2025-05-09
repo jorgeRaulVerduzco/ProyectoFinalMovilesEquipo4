@@ -87,7 +87,7 @@ class DetalleActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.tvColor).text          = "COLOR: ${prenda.color}"
             findViewById<TextView>(R.id.tvEstampado).text      = "ESTAMPADO: ${if (prenda.estampada) "SÍ" else "N/A"}"
             findViewById<TextView>(R.id.tvTags).text           = prenda.tags.joinToString(" ") { "#${it.uppercase()}" }
-            findViewById<TextView>(R.id.tvTotalUsos).text      = "TOTAL VECES USADAS: 34"
+            findViewById<TextView>(R.id.tvTotalUsos).text = "TOTAL VECES USADAS: ${prenda.usosTotales ?: 0}"
             findViewById<ImageView>(R.id.ivBarChart)
                 .setImageResource(R.drawable.grafica)
         }

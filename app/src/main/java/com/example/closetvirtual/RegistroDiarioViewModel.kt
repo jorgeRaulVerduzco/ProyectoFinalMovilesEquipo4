@@ -85,6 +85,7 @@ class RegistroDiarioViewModel  : ViewModel() {
 
         val prendas = _prendasSeleccionadas.value ?: mutableListOf()
         val fechaActual = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+        val fechaMes = SimpleDateFormat("MM/yyyy", Locale.getDefault()).format(Date())
         val nuevoRegistro = RegistrosDiarios(
             id = UUID.randomUUID().toString(),
             fecha = fechaActual,
@@ -93,10 +94,37 @@ class RegistroDiarioViewModel  : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                // Guardar el registro diario
                 db.collection("registros_diarios")
                     .document(nuevoRegistro.id)
                     .set(nuevoRegistro.toMap())
                     .await()
+
+                // Actualizar los contadores de uso para cada prenda
+                for (prenda in prendas) {
+                    // Obtener la prenda actual de Firestore
+                    val prendaDoc = db.collection("prendas").document(prenda.id).get().await()
+                    val prendaData = prendaDoc.toObject(Prenda::class.java)
+
+                    if (prendaData != null) {
+                        // Actualizar contadores
+                        val usosTotales = (prendaData.usosTotales ?: 0) + 1
+                        val usosRegistrosDiarios = (prendaData.usosRegistrosDiarios ?: 0) + 1
+
+                        // Actualizar usos por mes
+                        val usosPorMes = prendaData.usosPorMes?.toMutableMap() ?: mutableMapOf()
+                        usosPorMes[fechaMes] = (usosPorMes[fechaMes] ?: 0) + 1
+
+                        // Actualizar la prenda en Firestore
+                        db.collection("prendas").document(prenda.id).update(
+                            mapOf(
+                                "usosTotales" to usosTotales,
+                                "usosRegistrosDiarios" to usosRegistrosDiarios,
+                                "usosPorMes" to usosPorMes
+                            )
+                        ).await()
+                    }
+                }
 
                 // Actualizar la lista después de agregar
                 withContext(Dispatchers.Main) {
