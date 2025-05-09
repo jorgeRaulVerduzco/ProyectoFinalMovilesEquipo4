@@ -36,6 +36,17 @@ class UsuarioViewModel : ViewModel() {
         _registerResult.value = AuthResult.Loading
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                // Verificar si ya existe un usuario con el mismo nombre de usuario
+                val usernameQuery = db.collection("usuarios")
+                    .whereEqualTo("usuario", usuario.usuario)
+                    .get()
+                    .await()
+
+                if (!usernameQuery.isEmpty) {
+                    _registerResult.postValue(AuthResult.Error("El nombre de usuario ya está en uso"))
+                    return@launch
+                }
+
                 // 1) crear el Auth
                 val authResult = auth
                     .createUserWithEmailAndPassword(usuario.email, usuario.contraseña)

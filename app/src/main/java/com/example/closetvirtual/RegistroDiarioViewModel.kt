@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
+
 class RegistroDiarioViewModel  : ViewModel() {
     private val db = Firebase.firestore
 
@@ -86,47 +87,21 @@ class RegistroDiarioViewModel  : ViewModel() {
         val prendas = _prendasSeleccionadas.value ?: mutableListOf()
         val fechaActual = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
         val fechaMes = SimpleDateFormat("MM/yyyy", Locale.getDefault()).format(Date())
-        val nuevoRegistro = RegistrosDiarios(
-            id = UUID.randomUUID().toString(),
-            fecha = fechaActual,
-            prendas = prendas
-        )
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Guardar el registro diario
-                db.collection("registros_diarios")
-                    .document(nuevoRegistro.id)
-                    .set(nuevoRegistro.toMap())
-                    .await()
+                // Buscar si ya existe un registro para la fecha actual
+                val registroExistente = buscarRegistroPorFecha(fechaActual)
 
-                // Actualizar los contadores de uso para cada prenda
-                for (prenda in prendas) {
-                    // Obtener la prenda actual de Firestore
-                    val prendaDoc = db.collection("prendas").document(prenda.id).get().await()
-                    val prendaData = prendaDoc.toObject(Prenda::class.java)
-
-                    if (prendaData != null) {
-                        // Actualizar contadores
-                        val usosTotales = (prendaData.usosTotales ?: 0) + 1
-                        val usosRegistrosDiarios = (prendaData.usosRegistrosDiarios ?: 0) + 1
-
-                        // Actualizar usos por mes
-                        val usosPorMes = prendaData.usosPorMes?.toMutableMap() ?: mutableMapOf()
-                        usosPorMes[fechaMes] = (usosPorMes[fechaMes] ?: 0) + 1
-
-                        // Actualizar la prenda en Firestore
-                        db.collection("prendas").document(prenda.id).update(
-                            mapOf(
-                                "usosTotales" to usosTotales,
-                                "usosRegistrosDiarios" to usosRegistrosDiarios,
-                                "usosPorMes" to usosPorMes
-                            )
-                        ).await()
-                    }
+                if (registroExistente != null) {
+                    // Actualizar el registro existente
+                    actualizarRegistroExistente(registroExistente, prendas, fechaMes)
+                } else {
+                    // Crear un nuevo registro
+                    crearNuevoRegistro(prendas, fechaActual, fechaMes)
                 }
 
-                // Actualizar la lista después de agregar
+                // Actualizar la lista después de guardar
                 withContext(Dispatchers.Main) {
                     obtenerRegistrosDiarios()
                     // Limpiar las prendas seleccionadas
@@ -142,6 +117,105 @@ class RegistroDiarioViewModel  : ViewModel() {
                     _isLoading.value = false
                 }
             }
+        }
+    }
+
+    private suspend fun buscarRegistroPorFecha(fecha: String): RegistrosDiarios? {
+        val snapshot = db.collection("registros_diarios")
+            .whereEqualTo("fecha", fecha)
+            .get()
+            .await()
+
+        if (snapshot.documents.isEmpty()) {
+            return null
+        }
+
+        val doc = snapshot.documents.first()
+        val data = doc.data
+        return if (data != null) {
+            RegistrosDiarios.fromMap(data, doc.id)
+        } else null
+    }
+
+    private suspend fun actualizarRegistroExistente(registro: RegistrosDiarios, nuevasPrendas: List<Prenda>, fechaMes: String) {
+        // Verificar qué prendas son nuevas
+        val prendasExistentes = registro.prendas.map { it.id }.toSet()
+        val prendasAgregar = nuevasPrendas.filter { !prendasExistentes.contains(it.id) }
+
+        // Si no hay prendas nuevas, no hacer nada
+        if (prendasAgregar.isEmpty()) {
+            withContext(Dispatchers.Main) {
+                _errorMessage.value = "No hay prendas nuevas para agregar al registro"
+            }
+            return
+        }
+
+        // Combinar las prendas existentes con las nuevas
+        val todasLasPrendas = registro.prendas + prendasAgregar
+
+        // Actualizar el registro en Firestore
+        val registroActualizado = RegistrosDiarios(
+            id = registro.id,
+            fecha = registro.fecha,
+            prendas = todasLasPrendas
+        )
+
+        db.collection("registros_diarios")
+            .document(registro.id)
+            .set(registroActualizado.toMap())
+            .await()
+
+        // Actualizar los contadores de uso para cada prenda nueva
+        for (prenda in prendasAgregar) {
+            actualizarContadoresUso(prenda, fechaMes)
+        }
+
+        withContext(Dispatchers.Main) {
+            _errorMessage.value = "Registro actualizado correctamente"
+        }
+    }
+
+    private suspend fun crearNuevoRegistro(prendas: List<Prenda>, fechaActual: String, fechaMes: String) {
+        val nuevoRegistro = RegistrosDiarios(
+            id = UUID.randomUUID().toString(),
+            fecha = fechaActual,
+            prendas = prendas
+        )
+
+        // Guardar el registro diario
+        db.collection("registros_diarios")
+            .document(nuevoRegistro.id)
+            .set(nuevoRegistro.toMap())
+            .await()
+
+        // Actualizar los contadores de uso para cada prenda
+        for (prenda in prendas) {
+            actualizarContadoresUso(prenda, fechaMes)
+        }
+    }
+
+    private suspend fun actualizarContadoresUso(prenda: Prenda, fechaMes: String) {
+        // Obtener la prenda actual de Firestore
+        val prendaDoc = db.collection("prendas").document(prenda.id).get().await()
+        val prendaData = prendaDoc.toObject(Prenda::class.java)
+
+        if (prendaData != null) {
+            // Actualizar contadores
+            val usosTotales = (prendaData.usosTotales ?: 0) + 1
+            val usosRegistrosDiarios = (prendaData.usosRegistrosDiarios ?: 0) + 1
+
+            // Actualizar usos por mes
+            val usosPorMes = prendaData.usosPorMes?.toMutableMap() ?: mutableMapOf()
+            usosPorMes[fechaMes] = (usosPorMes[fechaMes] ?: 0) + 1
+
+            // Actualizar la prenda en Firestore
+            db.collection("prendas").document(prenda.id).update(
+                mapOf(
+                    "usosTotales" to usosTotales,
+                    "usosRegistrosDiarios" to usosRegistrosDiarios,
+                    "usosPorMes" to usosPorMes
+                )
+            ).await()
         }
     }
 
