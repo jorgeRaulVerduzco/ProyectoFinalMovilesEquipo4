@@ -2,42 +2,40 @@ package com.example.closetvirtual
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.firestore.FirebaseFirestore
 
 class TusOutfitsActivity : AppCompatActivity() {
+    private val db = FirebaseFirestore.getInstance()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_tus_outfits)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.activity_tus_outfits)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            val sb = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(sb.left, sb.top, sb.right, sb.bottom)
             insets
         }
-        findViewById<Button>(R.id.btnCrearOutfit).setOnClickListener {
-            val intent = Intent(this, CrearOutfit::class.java)
-            startActivity(intent)
+
+        val rv: RecyclerView = findViewById(R.id.rvOutfits)
+        rv.layoutManager = LinearLayoutManager(this)
+
+        val adapter = OutfitAdapter { outfit ->
+            startActivity(Intent(this, OutfitSeleccionado::class.java)
+                .putExtra("OUTFIT_NAME", outfit.nombre))
         }
-        findViewById<TextView>(R.id.tvOutfitCasual).setOnClickListener {
-            val intent = Intent(this, OutfitSeleccionado::class.java)
-            startActivity(intent)
-        }
-        findViewById<TextView>(R.id.tvOutfitInvierno).setOnClickListener {
-            val intent = Intent(this, OutfitSeleccionado::class.java)
-            startActivity(intent)
-        }
-        findViewById<TextView>(R.id.tvOutfitElegante).setOnClickListener {
-            val intent = Intent(this, OutfitSeleccionado::class.java)
-            startActivity(intent)
-        }
-        findViewById<TextView>(R.id.tvOutfitFormalComodo).setOnClickListener {
-            val intent = Intent(this, OutfitSeleccionado::class.java)
-            startActivity(intent)
+        rv.adapter = adapter
+
+        // Carga todos los outfits guardados
+        db.collection("outfits").get().addOnSuccessListener { snap ->
+            val list = snap.documents.mapNotNull { it.toObject(Outfits::class.java) }
+            adapter.submitList(list)
         }
     }
 }

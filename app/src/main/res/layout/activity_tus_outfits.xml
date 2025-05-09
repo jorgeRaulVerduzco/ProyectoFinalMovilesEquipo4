@@ -62,61 +62,19 @@
         android:paddingStart="24dp"
         android:paddingEnd="16dp">
 
-        <TextView
-            android:id="@+id/tvOutfitCasual"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CASUAL DIARIO"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
-            android:layout_margin="8dp"
-            android:drawablePadding="8dp"
-            android:padding="8dp" />
-
-        <TextView
-            android:id="@+id/tvOutfitInvierno"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="OUTFIT DE INVIERNO"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
-            android:layout_margin="8dp"
-            android:drawablePadding="8dp"
-            android:padding="8dp" />
-
-        <TextView
-            android:id="@+id/tvOutfitElegante"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ELEGANTE"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
-            android:layout_margin="8dp"
-            android:drawablePadding="8dp"
-            android:padding="8dp" />
-
-        <TextView
-            android:id="@+id/tvOutfitFormalComodo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="FORMAL Y CÓMODO"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
-            android:layout_margin="8dp"
-            android:drawablePadding="8dp"
-            android:padding="8dp" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvOutfits"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     </LinearLayout>
 
     <Button
         android:id="@+id/btnCrearOutfit"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="CREAR UN NUEVO OUTFIT"
-        android:textColor="@android:color/white"
+        android:text="CREAR NUEVO OUTFIT"
+        android:layout_marginTop="8dp"
         android:background="@android:color/black"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="250dp" />
+        android:textColor="@android:color/white" />
 
 </LinearLayout>
