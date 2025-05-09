@@ -2,11 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/crear_outfit_root"
+    android:id="@+id/detalle_outfit_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CrearOutfit"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".DetalleOutfitActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,10 +17,19 @@
         android:padding="16dp">
 
         <ImageView
+            android:id="@+id/btnVolver"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@android:drawable/ic_menu_revert"
+            android:tint="@android:color/white"
+            android:contentDescription="Volver" />
+
+        <ImageView
             android:layout_width="56dp"
             android:layout_height="56dp"
+            android:layout_marginStart="8dp"
             android:src="@drawable/closet_icon"
-            android:contentDescription="@string/closet_virtual" />
+            android:contentDescription="Closet Icon" />
 
         <TextView
             android:layout_width="0dp"
@@ -38,25 +47,29 @@
             android:layout_height="48dp"
             android:src="@drawable/user_iconn"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/usaurio" />
+            android:contentDescription="User Profile" />
     </LinearLayout>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CREAR OUTFIT"
+        android:text="DETALLE DE OUTFIT"
         android:textColor="@android:color/black"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="bold"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp" />
 
-    <EditText
-        android:id="@+id/etNombreOutfit"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tvNombreOutfit"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Nombre del outfit"
-        android:inputType="textPersonName"
-        android:layout_margin="16dp" />
+        android:text="Nombre del Outfit"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -83,18 +96,14 @@
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray" />
 
-            <HorizontalScrollView
+            <LinearLayout
+                android:id="@+id/llTopContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:id="@+id/topItemsContainer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"/>
-            </HorizontalScrollView>
+                android:layout_marginBottom="16dp" />
 
             <!-- BOTTOM -->
             <TextView
@@ -110,18 +119,14 @@
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray" />
 
-            <HorizontalScrollView
+            <LinearLayout
+                android:id="@+id/llBottomContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:id="@+id/bottomItemsContainer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"/>
-            </HorizontalScrollView>
+                android:layout_marginBottom="16dp" />
 
             <!-- ZAPATOS -->
             <TextView
@@ -137,18 +142,14 @@
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray" />
 
-            <HorizontalScrollView
+            <LinearLayout
+                android:id="@+id/llZapatosContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:id="@+id/zapatosItemsContainer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"/>
-            </HorizontalScrollView>
+                android:layout_marginBottom="16dp" />
 
             <!-- BODYSUIT -->
             <TextView
@@ -164,18 +165,14 @@
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray" />
 
-            <HorizontalScrollView
+            <LinearLayout
+                android:id="@+id/llBodysuitContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp">
-
-                <LinearLayout
-                    android:id="@+id/bodysuitItemsContainer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"/>
-            </HorizontalScrollView>
+                android:layout_marginBottom="16dp" />
 
             <!-- ACCESORIOS -->
             <TextView
@@ -191,39 +188,15 @@
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray" />
 
-            <HorizontalScrollView
+            <LinearLayout
+                android:id="@+id/llAccesoriosContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="16dp" />
 
-                <LinearLayout
-                    android:id="@+id/accesoriosItemsContainer"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"/>
-            </HorizontalScrollView>
-
-            <Button
-                android:id="@+id/btnGuardarOutfit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="GUARDAR"
-                android:textColor="@android:color/white"
-                android:background="@android:color/black"
-                android:padding="12dp"
-                android:layout_gravity="center"/>
-
-            <TextView
-                android:id="@+id/btnRegistrarNuevaPrenda"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/registrarPrenda"
-                android:textColor="@android:color/black"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:layout_gravity="center"
-                android:paddingTop="10dp" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
