@@ -121,12 +121,12 @@ class TusOutfitsActivity : AppCompatActivity() {
             val outfit = outfits[position]
             holder.tvNombreOutfit.text = outfit.nombre
 
-//            // Configurar el onClick para ver detalles del outfit
-//            holder.itemView.setOnClickListener {
-//                val intent = Intent(this@TusOutfitsActivity, DetalleOutfitActivity::class.java)
-//                intent.putExtra("outfitId", outfit.id)
-//                startActivity(intent)
-//            }
+            // Configurar el onClick para ver detalles del outfit
+            holder.itemView.setOnClickListener {
+                val intent = Intent(this@TusOutfitsActivity, DetalleOutfitActivity::class.java)
+                intent.putExtra("outfitId", outfit.id)
+                startActivity(intent)
+            }
 
             // Configurar long click para eliminar
             holder.itemView.setOnLongClickListener {
