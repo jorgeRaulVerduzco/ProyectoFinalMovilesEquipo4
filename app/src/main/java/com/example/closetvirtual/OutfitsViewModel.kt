@@ -29,21 +29,20 @@ class OutfitsViewModel : ViewModel() {
     private val _prendasSeleccionadas = MutableLiveData<MutableList<Prenda>>(mutableListOf())
     val prendasSeleccionadas: LiveData<MutableList<Prenda>> = _prendasSeleccionadas
 
-    // LiveData para estado de carga
     private val _isLoading = MutableLiveData<Boolean>(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
-    // LiveData para mensajes de error
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
-    // LiveData para outfits por fecha (para el calendario)
-    private val _outfitsPorFecha = MutableLiveData<Map<String, Outfits>>(emptyMap())
-    val outfitsPorFecha: LiveData<Map<String, Outfits>> = _outfitsPorFecha
+    private val _outfitsPorFecha = MutableLiveData<Map<String, List<Outfits>>>(emptyMap())
+    val outfitsPorFecha: LiveData<Map<String, List<Outfits>>> = _outfitsPorFecha
 
-    // LiveData para el outfit seleccionado en el calendario
-    private val _outfitSeleccionado = MutableLiveData<Outfits?>(null)
+     val _outfitSeleccionado = MutableLiveData<Outfits?>(null)
     val outfitSeleccionado: LiveData<Outfits?> = _outfitSeleccionado
+
+    private val _outfitsSeleccionados = MutableLiveData<List<Outfits>>(emptyList())
+    val outfitsSeleccionados: LiveData<List<Outfits>> = _outfitsSeleccionados
 
     init {
         obtenerOutfits()
@@ -82,8 +81,8 @@ class OutfitsViewModel : ViewModel() {
 
                 withContext(Dispatchers.Main) {
                     _outfits.value = listaOutfits
-                    // Crear un mapa de outfits por fecha para el calendario
-                    _outfitsPorFecha.value = listaOutfits.associateBy { it.fecha }
+                    // Agrupar outfits por fecha
+                    _outfitsPorFecha.value = listaOutfits.groupBy { it.fecha }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -107,9 +106,12 @@ class OutfitsViewModel : ViewModel() {
     // Selecciona un outfit para una fecha específica
     fun seleccionarOutfitPorFecha(timestamp: Long) {
         val fechaFormateada = formatearFecha(timestamp)
-        val outfit = _outfitsPorFecha.value?.get(fechaFormateada)
-        _outfitSeleccionado.value = outfit
+        val outfits = _outfitsPorFecha.value?.get(fechaFormateada) ?: emptyList()
+        _outfitsSeleccionados.value = outfits
+        // If there's at least one outfit, select the first one for display
+        _outfitSeleccionado.value = outfits.firstOrNull()
     }
+
 
     // Limpia el outfit seleccionado
     fun limpiarOutfitSeleccionado() {
@@ -155,8 +157,8 @@ class OutfitsViewModel : ViewModel() {
                 }
 
                 withContext(Dispatchers.Main) {
-                    // Crear un mapa de outfits por fecha para el calendario
-                    _outfitsPorFecha.value = listaOutfits.associateBy { it.fecha }
+                    // Agrupar outfits por fecha
+                    _outfitsPorFecha.value = listaOutfits.groupBy { it.fecha }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

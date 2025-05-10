@@ -195,12 +195,88 @@ class CalendarioVisual : AppCompatActivity() {
             }
         })
 
+        // Add observer for multiple outfits
+        viewModel.outfitsSeleccionados.observe(this, Observer { outfits ->
+            if (outfits.isNotEmpty()) {
+                // If we have multiple outfits, show a selector or list
+                setupOutfitsList(outfits)
+            }
+        })
+
         // Observe error messages
         viewModel.errorMessage.observe(this, Observer { errorMsg ->
             if (!errorMsg.isNullOrEmpty()) {
                 Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun setupOutfitsList(outfits: List<Outfits>) {
+        // Replace the current outfit preview with a list/selector for multiple outfits
+
+        // First, make sure the outfit container is visible
+        containerOutfitSeleccionado.visibility = View.VISIBLE
+        containerNoOutfit.visibility = View.GONE
+
+        // Update the title to show there are multiple outfits
+        if (outfits.size > 1) {
+            tvNumPrendas.text = "${outfits.size} outfits para esta fecha"
+
+            // Add a spinner/dropdown for outfit selection
+            val outfitNames = outfits.map { it.nombre }.toTypedArray()
+
+            // Check if the spinner already exists, if not create it
+            val outfitSpinner = findViewById<Spinner>(R.id.outfitSpinner) ?: run {
+                // Create a spinner programmatically if it doesn't exist in layout
+                val spinner = Spinner(this)
+                spinner.id = R.id.outfitSpinner
+
+                // Find the container where we want to add the spinner
+                val container = findViewById<LinearLayout>(R.id.containerOutfitSeleccionado)
+                val insertIndex = container.indexOfChild(tvNombreOutfit) + 1
+
+                // Add the spinner to the layout
+                val layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                layoutParams.setMargins(0, 16, 0, 16)
+                container.addView(spinner, insertIndex, layoutParams)
+
+                spinner
+            }
+
+            // Set up adapter for spinner
+            val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, outfitNames)
+            outfitSpinner.adapter = adapter
+            outfitSpinner.visibility = View.VISIBLE
+
+            // Handle spinner selection
+            outfitSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    // Display the selected outfit
+                    val selectedOutfit = outfits[position]
+                    viewModel._outfitSeleccionado.value = selectedOutfit
+                    currentOutfitId = selectedOutfit.id
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    // Do nothing
+                }
+            }
+
+            // Hide the normal outfit name field when using spinner
+            tvNombreOutfit.visibility = View.GONE
+        } else {
+            // Only one outfit, display it normally
+            val outfit = outfits.first()
+            tvNombreOutfit.visibility = View.VISIBLE
+            tvNombreOutfit.text = outfit.nombre
+            tvNumPrendas.text = "${outfit.items.size} prendas"
+
+            // Hide spinner if it exists
+            findViewById<Spinner>(R.id.outfitSpinner)?.visibility = View.GONE
+        }
     }
 
     private fun updateMonthLabel() {
