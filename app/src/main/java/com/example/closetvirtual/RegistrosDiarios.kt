@@ -3,13 +3,15 @@ package com.example.closetvirtual
 data class RegistrosDiarios(
     var id: String = "",
     var fecha: String = "",
-    var prendas: List<Prenda> = emptyList()
+    var prendas: List<Prenda> = emptyList(),
+    var usuarioId: String = ""  // Nuevo campo para asociar el registro con un usuario específico
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(
             "id" to id,
             "fecha" to fecha,
-            "prendas" to prendas.map { it.toMap() }
+            "prendas" to prendas.map { it.toMap() },
+            "usuarioId" to usuarioId  // Incluir usuarioId en el mapa
         )
     }
 
@@ -32,7 +34,8 @@ data class RegistrosDiarios(
             return RegistrosDiarios(
                 id = id,
                 fecha = map["fecha"] as? String ?: "",
-                prendas = prendas
+                prendas = prendas,
+                usuarioId = map["usuarioId"] as? String ?: ""  // Recuperar usuarioId del mapa
             )
         }
     }

@@ -17,11 +17,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import androidx.cardview.widget.CardView
-
+import com.google.firebase.auth.FirebaseAuth
 class RegistroDIario : AppCompatActivity() {
     private lateinit var registroDiarioViewModel: RegistroDiarioViewModel
     private lateinit var prendaViewModel: PrendaViewModel
     private var progressDialog: ProgressDialog? = null
+    private val auth = FirebaseAuth.getInstance()
 
     // Referencias a contenedores UI
     private lateinit var topItemsContainer: LinearLayout
@@ -38,6 +39,16 @@ class RegistroDIario : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
+        }
+
+        // Verificar si el usuario está autenticado
+        if (auth.currentUser == null) {
+            // Redirigir al login si no hay usuario autenticado
+            Toast.makeText(this, "Debes iniciar sesión para crear un registro", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
         }
 
         // Inicializar ViewModels
@@ -88,10 +99,8 @@ class RegistroDIario : AppCompatActivity() {
         })
 
         // Observar si el registro se guardó exitosamente
-        registroDiarioViewModel.registrosDiarios.observe(this, Observer {
-            // Esta observación se activa cuando se actualiza la lista de registros,
-            // lo que ocurre después de guardar un nuevo registro
-            if (registroDiarioViewModel.isLoading.value == false) {
+        registroDiarioViewModel.registroGuardado.observe(this, Observer { guardado ->
+            if (guardado) {
                 Toast.makeText(this, "Registro guardado exitosamente", Toast.LENGTH_SHORT).show()
                 // Redirigir a la actividad de registros diarios
                 val intent = Intent(this, TusRegistrosDiariosActivity::class.java)
@@ -120,18 +129,37 @@ class RegistroDIario : AppCompatActivity() {
 
     private fun mostrarPrendasEnUI(prendas: List<Prenda>) {
         // Limpiar contenedores
-        listOf(topItemsContainer, bottomItemsContainer, zapatosItemsContainer,
-            bodysuitItemsContainer, accesoriosItemsContainer).forEach { it.removeAllViews() }
+        listOf(
+            topItemsContainer,
+            bottomItemsContainer,
+            zapatosItemsContainer,
+            bodysuitItemsContainer,
+            accesoriosItemsContainer
+        ).forEach { it.removeAllViews() }
 
         // Agrupar prendas por categoría
         val prendasAgrupadas = prendas.groupBy { it.categoria.uppercase() }
 
         // Añadir prendas a sus respectivos contenedores
-        prendasAgrupadas["TOP"]?.forEach { prenda -> addItemView(topItemsContainer, prenda) }
-        prendasAgrupadas["BOTTOM"]?.forEach { prenda -> addItemView(bottomItemsContainer, prenda) }
-        prendasAgrupadas["ZAPATOS"]?.forEach { prenda -> addItemView(zapatosItemsContainer, prenda) }
-        prendasAgrupadas["BODYSUIT"]?.forEach { prenda -> addItemView(bodysuitItemsContainer, prenda) }
-        prendasAgrupadas["ACCESORIOS"]?.forEach { prenda -> addItemView(accesoriosItemsContainer, prenda) }
+        prendasAgrupadas["TOP"]?.forEach { prenda ->
+            addItemView(topItemsContainer, prenda)
+        }
+
+        prendasAgrupadas["BOTTOM"]?.forEach { prenda ->
+            addItemView(bottomItemsContainer, prenda)
+        }
+
+        prendasAgrupadas["ZAPATOS"]?.forEach { prenda ->
+            addItemView(zapatosItemsContainer, prenda)
+        }
+
+        prendasAgrupadas["BODYSUIT"]?.forEach { prenda ->
+            addItemView(bodysuitItemsContainer, prenda)
+        }
+
+        prendasAgrupadas["ACCESORIOS"]?.forEach { prenda ->
+            addItemView(accesoriosItemsContainer, prenda)
+        }
 
         // Añadir mensaje si alguna categoría está vacía
         if (topItemsContainer.childCount == 0) addEmptyMessage(topItemsContainer)
@@ -142,7 +170,6 @@ class RegistroDIario : AppCompatActivity() {
     }
 
     private fun addItemView(container: LinearLayout, prenda: Prenda) {
-        //falta eso
         val itemView = layoutInflater.inflate(R.layout.item_prenda_seleccionable, container, false)
         val imageView = itemView.findViewById<ImageView>(R.id.ivPrenda)
         val textView = itemView.findViewById<TextView>(R.id.tvPrendaNombre)
@@ -155,6 +182,7 @@ class RegistroDIario : AppCompatActivity() {
                 .centerCrop()
                 .into(imageView)
         }
+
         textView.text = prenda.nombre
 
         // Verificar si la prenda está seleccionada y actualizar el estilo
@@ -168,7 +196,6 @@ class RegistroDIario : AppCompatActivity() {
             } else {
                 registroDiarioViewModel.agregarPrendaSeleccionada(prenda)
             }
-
             // Animar la selección/deselección
             animarSeleccion(cardView, !estaSeleccionada)
         }
@@ -212,13 +239,8 @@ class RegistroDIario : AppCompatActivity() {
         }
 
         // Animar color de fondo
-        val colorInicial = if (seleccionar)
-            resources.getColor(android.R.color.white)
-        else resources.getColor(android.R.color.holo_blue_light)
-        val colorFinal = if (seleccionar)
-            resources.getColor(android.R.color.holo_blue_light)
-        else resources.getColor(android.R.color.white)
-
+        val colorInicial = if (seleccionar) resources.getColor(android.R.color.white) else resources.getColor(android.R.color.holo_blue_light)
+        val colorFinal = if (seleccionar) resources.getColor(android.R.color.holo_blue_light) else resources.getColor(android.R.color.white)
         ValueAnimator.ofArgb(colorInicial, colorFinal).apply {
             duration = 200
             addUpdateListener { animator ->

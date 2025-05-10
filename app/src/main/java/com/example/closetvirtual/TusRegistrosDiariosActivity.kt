@@ -15,11 +15,17 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 class TusRegistrosDiariosActivity : AppCompatActivity() {
+
 
     private lateinit var vm: RegistroDiarioViewModel
     private var progressDialog: ProgressDialog? = null
     private lateinit var llListaRegistros: LinearLayout
+    private lateinit var tvTusRegistros: TextView
+    private val auth = FirebaseAuth.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,11 +37,25 @@ class TusRegistrosDiariosActivity : AppCompatActivity() {
             insets
         }
 
+        // Verificar si el usuario está autenticado
+        if (auth.currentUser == null) {
+            // Redirigir al login si no hay usuario autenticado
+            Toast.makeText(this, "Debes iniciar sesión para crear un registro", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
+
         // Inicializar ViewModel
         vm = ViewModelProvider(this).get(RegistroDiarioViewModel::class.java)
 
         // Referencias UI
         llListaRegistros = findViewById(R.id.llListaRegistros)
+        tvTusRegistros = findViewById(R.id.tvTusRegistros)
+
+        // Personalizar título con el nombre del usuario
+        personalizarTitulo()
 
         // Configurar botón de crear registro
         findViewById<Button>(R.id.btnCrearRegistro).setOnClickListener {
@@ -75,6 +95,24 @@ class TusRegistrosDiariosActivity : AppCompatActivity() {
         super.onResume()
         // Refrescar la lista de registros cada vez que se vuelve a la actividad
         vm.obtenerRegistrosDiarios()
+    }
+
+    private fun personalizarTitulo() {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            // Obtener información adicional del usuario desde Firestore
+            Firebase.firestore.collection("usuarios")
+                .document(currentUser.uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document != null && document.exists()) {
+                        val nombre = document.getString("nombres") ?: ""
+                        if (nombre.isNotEmpty()) {
+                            tvTusRegistros.text = "REGISTROS DIARIOS DE ${nombre.uppercase()}"
+                        }
+                    }
+                }
+        }
     }
 
     private fun mostrarProgressDialog() {

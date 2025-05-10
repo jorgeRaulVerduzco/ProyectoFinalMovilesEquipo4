@@ -1,10 +1,10 @@
 package com.example.closetvirtual
-
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -16,9 +16,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
-
-class RegistroDiarioViewModel  : ViewModel() {
+class RegistroDiarioViewModel : ViewModel() {
     private val db = Firebase.firestore
+    private val auth = FirebaseAuth.getInstance()
 
     // LiveData para la lista de registros diarios
     private val _registrosDiarios = MutableLiveData<List<RegistrosDiarios>>(emptyList())
@@ -36,16 +36,33 @@ class RegistroDiarioViewModel  : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
+    // LiveData para indicar si un registro se guardó correctamente
+    private val _registroGuardado = MutableLiveData<Boolean>(false)
+    val registroGuardado: LiveData<Boolean> = _registroGuardado
+
     init {
         obtenerRegistrosDiarios()
     }
 
+    // Obtener el ID del usuario actual
+    private fun getCurrentUserId(): String {
+        return auth.currentUser?.uid ?: ""
+    }
+
     fun obtenerRegistrosDiarios() {
+        val userId = getCurrentUserId()
+        if (userId.isEmpty()) {
+            _errorMessage.value = "Usuario no autenticado"
+            return
+        }
+
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                // Filtrar por usuarioId igual al ID del usuario actual
                 val snapshot = db.collection("registros_diarios")
-                    .orderBy("fecha", Query.Direction.DESCENDING)
+                    .whereEqualTo("usuarioId", userId)  // Filtrar por usuario actual
+
                     .get()
                     .await()
 
@@ -62,6 +79,11 @@ class RegistroDiarioViewModel  : ViewModel() {
 
                 withContext(Dispatchers.Main) {
                     _registrosDiarios.value = registros
+                    Log.d("RegistroDiarioVM", "Registros cargados: ${registros.size}")
+                    // Imprimir detalles para depuración
+                    registros.forEach { reg ->
+                        Log.d("RegistroDiarioVM", "Registro: ${reg.id}, Fecha: ${reg.fecha}, Prendas: ${reg.prendas.size}")
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -82,7 +104,14 @@ class RegistroDiarioViewModel  : ViewModel() {
             return
         }
 
+        val userId = getCurrentUserId()
+        if (userId.isEmpty()) {
+            _errorMessage.value = "Usuario no autenticado"
+            return
+        }
+
         _isLoading.value = true
+        _registroGuardado.value = false  // Resetear estado
 
         val prendas = _prendasSeleccionadas.value ?: mutableListOf()
         val fechaActual = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
@@ -90,15 +119,15 @@ class RegistroDiarioViewModel  : ViewModel() {
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Buscar si ya existe un registro para la fecha actual
-                val registroExistente = buscarRegistroPorFecha(fechaActual)
+                // Buscar si ya existe un registro para la fecha actual Y el usuario actual
+                val registroExistente = buscarRegistroPorFechaYUsuario(fechaActual, userId)
 
                 if (registroExistente != null) {
                     // Actualizar el registro existente
                     actualizarRegistroExistente(registroExistente, prendas, fechaMes)
                 } else {
                     // Crear un nuevo registro
-                    crearNuevoRegistro(prendas, fechaActual, fechaMes)
+                    crearNuevoRegistro(prendas, fechaActual, fechaMes, userId)
                 }
 
                 // Actualizar la lista después de guardar
@@ -106,6 +135,8 @@ class RegistroDiarioViewModel  : ViewModel() {
                     obtenerRegistrosDiarios()
                     // Limpiar las prendas seleccionadas
                     _prendasSeleccionadas.value = mutableListOf()
+                    // Indicar que el registro se guardó correctamente
+                    _registroGuardado.value = true
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -120,9 +151,12 @@ class RegistroDiarioViewModel  : ViewModel() {
         }
     }
 
-    private suspend fun buscarRegistroPorFecha(fecha: String): RegistrosDiarios? {
+    // El resto del código permanece igual...
+
+    private suspend fun buscarRegistroPorFechaYUsuario(fecha: String, userId: String): RegistrosDiarios? {
         val snapshot = db.collection("registros_diarios")
             .whereEqualTo("fecha", fecha)
+            .whereEqualTo("usuarioId", userId)  // Agregar filtro por usuario
             .get()
             .await()
 
@@ -157,7 +191,8 @@ class RegistroDiarioViewModel  : ViewModel() {
         val registroActualizado = RegistrosDiarios(
             id = registro.id,
             fecha = registro.fecha,
-            prendas = todasLasPrendas
+            prendas = todasLasPrendas,
+            usuarioId = registro.usuarioId  // Mantener el ID del usuario
         )
 
         db.collection("registros_diarios")
@@ -175,11 +210,12 @@ class RegistroDiarioViewModel  : ViewModel() {
         }
     }
 
-    private suspend fun crearNuevoRegistro(prendas: List<Prenda>, fechaActual: String, fechaMes: String) {
+    private suspend fun crearNuevoRegistro(prendas: List<Prenda>, fechaActual: String, fechaMes: String, userId: String) {
         val nuevoRegistro = RegistrosDiarios(
             id = UUID.randomUUID().toString(),
             fecha = fechaActual,
-            prendas = prendas
+            prendas = prendas,
+            usuarioId = userId  // Asignar el ID del usuario actual
         )
 
         // Guardar el registro diario
@@ -220,17 +256,34 @@ class RegistroDiarioViewModel  : ViewModel() {
     }
 
     fun eliminarRegistroDiario(id: String, onComplete: (() -> Unit)? = null) {
+        val userId = getCurrentUserId()
+        if (userId.isEmpty()) {
+            _errorMessage.value = "Usuario no autenticado"
+            return
+        }
+
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                db.collection("registros_diarios")
-                    .document(id)
-                    .delete()
-                    .await()
+                // Verificar primero que el registro pertenezca al usuario actual
+                val registroDoc = db.collection("registros_diarios").document(id).get().await()
+                val data = registroDoc.data
 
-                withContext(Dispatchers.Main) {
-                    onComplete?.invoke()
-                    obtenerRegistrosDiarios()
+                if (data != null && data["usuarioId"] == userId) {
+                    // Si pertenece al usuario, entonces eliminar
+                    db.collection("registros_diarios")
+                        .document(id)
+                        .delete()
+                        .await()
+
+                    withContext(Dispatchers.Main) {
+                        onComplete?.invoke()
+                        obtenerRegistrosDiarios()
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        _errorMessage.value = "No tienes permiso para eliminar este registro"
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -246,16 +299,29 @@ class RegistroDiarioViewModel  : ViewModel() {
     }
 
     fun obtenerRegistroPorId(id: String, callback: (RegistrosDiarios?) -> Unit) {
+        val userId = getCurrentUserId()
+        if (userId.isEmpty()) {
+            _errorMessage.value = "Usuario no autenticado"
+            callback(null)
+            return
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val doc = db.collection("registros_diarios").document(id).get().await()
                 val data = doc.data
-                val registro = if (data != null) {
-                    RegistrosDiarios.fromMap(data, doc.id)
-                } else null
 
-                withContext(Dispatchers.Main) {
-                    callback(registro)
+                // Verificar que el registro pertenezca al usuario actual
+                if (data != null && data["usuarioId"] == userId) {
+                    val registro = RegistrosDiarios.fromMap(data, doc.id)
+                    withContext(Dispatchers.Main) {
+                        callback(registro)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        _errorMessage.value = "No tienes permiso para ver este registro"
+                        callback(null)
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
