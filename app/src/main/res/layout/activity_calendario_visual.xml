@@ -8,7 +8,7 @@
     tools:context=".CalendarioVisual"
     android:orientation="vertical">
 
-
+    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -40,101 +40,253 @@
             android:src="@drawable/user_iconn"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="User Profile" />
-
-
     </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="OUTFITS DEL MES"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_gravity="center"
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Febrero"
-        android:textColor="@android:color/black"
-        android:textSize="23sp"
-        android:layout_gravity="center"
-
-        />
-
-
-
-
-
-    <!-- Calendario mensual -->
+    <!-- Título y Mes -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:gravity="center"
+        android:padding="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="OUTFITS DEL MES"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_gravity="center" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="4dp">
+
+            <ImageButton
+                android:id="@+id/btnMesAnterior"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@android:drawable/ic_media_previous"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Mes Anterior" />
+
+            <TextView
+                android:id="@+id/tvMesActual"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mayo 2025"
+                android:textColor="@android:color/black"
+                android:textSize="23sp"
+                android:layout_marginHorizontal="16dp" />
+
+            <ImageButton
+                android:id="@+id/btnMesSiguiente"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:src="@android:drawable/ic_media_next"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Mes Siguiente" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Calendario mensual -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginVertical="8dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
 
         <CalendarView
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:firstDayOfWeek="2" />
+    </com.google.android.material.card.MaterialCardView>
 
+    <!-- ScrollView para la sección de outfits -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <!-- preview de fecha seleccionada -->
+            <!-- Mensaje cuando no hay outfit seleccionado -->
+            <LinearLayout
+                android:id="@+id/containerNoOutfit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="16dp"
+                android:visibility="visible"
+                android:minHeight="200dp">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:src="@drawable/closet_icon"
+                    android:alpha="0.3"
+                    android:contentDescription="Sin outfit seleccionado" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No hay outfit registrado para esta fecha"
+                    android:textColor="@android:color/darker_gray"
+                    android:textSize="16sp"
+                    android:textAlignment="center"
+                    android:layout_marginTop="16dp" />
+
+                <Button
+                    android:id="@+id/btnCrearOutfitFecha"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Crear Outfit para este día"
+                    android:textColor="@android:color/white"
+                    android:backgroundTint="@android:color/black"
+                    android:layout_marginTop="16dp" />
+            </LinearLayout>
+
+            <!-- Container para cuando hay outfit seleccionado -->
+            <LinearLayout
+                android:id="@+id/containerOutfitSeleccionado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvFechaSeleccionada"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Fecha: 9 Mayo, 2025"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="8dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="8dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:id="@+id/ivOutfitPreview"
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/blusa_rosa"
+                                android:contentDescription="Outfit Preview" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:layout_marginStart="16dp">
+
+                                <TextView
+                                    android:id="@+id/tvNombreOutfit"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="NOMBRE DE OUTFIT"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/tvNumPrendas"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="5 prendas"
+                                    android:textColor="@android:color/darker_gray"
+                                    android:textSize="14sp"
+                                    android:layout_marginTop="4dp" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <Button
+                            android:id="@+id/btnVerDetalles"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Ver Detalles del Outfit"
+                            android:textColor="@android:color/white"
+                            android:backgroundTint="@android:color/black"
+                            android:layout_marginTop="16dp" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Resumen de prendas"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="16dp" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvPrendasOutfit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:nestedScrollingEnabled="false"
+                    tools:listitem="@layout/item_prenda_mini" />
+            </LinearLayout>
+        </FrameLayout>
+    </ScrollView>
+
+    <!-- Botones inferiores -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:gravity="center">
 
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:src="@drawable/blusa_rosa"
-            android:contentDescription="Closet Icon" />
-
-        <TextView
+        <Button
+            android:id="@+id/btnVolverAtras"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="NOMBRE DE OUTFIT"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginStart="16dp"
-            />
+            android:layout_weight="1"
+            android:text="Volver"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@android:color/darker_gray"
+            android:layout_marginEnd="8dp" />
 
-        <TextView
+        <Button
+            android:id="@+id/btnCrearNuevoOutfit"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="FECHA SELECCIONADA"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginStart="16dp"
-            />
-
-
+            android:layout_weight="1"
+            android:text="Crear Outfit"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@android:color/black"
+            android:layout_marginStart="8dp" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btnVerDetalles"
-        android:paddingBottom="60dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Ver Outfit"
-        android:textColor="@android:color/white"
-        android:background="@android:color/black"
-        android:padding="12dp"
-        android:layout_gravity="center"/>
-
-
-
-
-
 </LinearLayout>

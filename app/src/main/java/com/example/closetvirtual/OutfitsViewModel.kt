@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
@@ -36,6 +37,14 @@ class OutfitsViewModel : ViewModel() {
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> = _errorMessage
 
+    // LiveData para outfits por fecha (para el calendario)
+    private val _outfitsPorFecha = MutableLiveData<Map<String, Outfits>>(emptyMap())
+    val outfitsPorFecha: LiveData<Map<String, Outfits>> = _outfitsPorFecha
+
+    // LiveData para el outfit seleccionado en el calendario
+    private val _outfitSeleccionado = MutableLiveData<Outfits?>(null)
+    val outfitSeleccionado: LiveData<Outfits?> = _outfitSeleccionado
+
     init {
         obtenerOutfits()
     }
@@ -57,7 +66,6 @@ class OutfitsViewModel : ViewModel() {
             try {
                 val snapshot = db.collection("outfits")
                     .whereEqualTo("usuarioId", userId)  // Filtrar por ID de usuario actual
-
                     .get()
                     .await()
 
@@ -74,6 +82,8 @@ class OutfitsViewModel : ViewModel() {
 
                 withContext(Dispatchers.Main) {
                     _outfits.value = listaOutfits
+                    // Crear un mapa de outfits por fecha para el calendario
+                    _outfitsPorFecha.value = listaOutfits.associateBy { it.fecha }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -88,7 +98,80 @@ class OutfitsViewModel : ViewModel() {
         }
     }
 
-    fun guardarOutfit(nombre: String) {
+    // Convierte una fecha timestamp a formato String dd/MM/yyyy
+    private fun formatearFecha(timestamp: Long): String {
+        val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        return sdf.format(Date(timestamp))
+    }
+
+    // Selecciona un outfit para una fecha específica
+    fun seleccionarOutfitPorFecha(timestamp: Long) {
+        val fechaFormateada = formatearFecha(timestamp)
+        val outfit = _outfitsPorFecha.value?.get(fechaFormateada)
+        _outfitSeleccionado.value = outfit
+    }
+
+    // Limpia el outfit seleccionado
+    fun limpiarOutfitSeleccionado() {
+        _outfitSeleccionado.value = null
+    }
+
+    // Obtener todos los outfits para un mes específico
+    fun obtenerOutfitsPorMes(año: Int, mes: Int) {
+        val userId = getCurrentUserId()
+        if (userId.isEmpty()) {
+            _errorMessage.value = "Usuario no autenticado"
+            return
+        }
+
+        _isLoading.value = true
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Calcular el primer y último día del mes en formato dd/MM/yyyy
+                val cal = Calendar.getInstance()
+                cal.set(año, mes, 1)
+                val inicioMes = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(cal.time)
+
+                cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
+                val finMes = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(cal.time)
+
+                // Obtener outfits con fecha dentro del rango del mes
+                val snapshot = db.collection("outfits")
+                    .whereEqualTo("usuarioId", userId)
+                    .whereGreaterThanOrEqualTo("fecha", inicioMes)
+                    .whereLessThanOrEqualTo("fecha", finMes)
+                    .get()
+                    .await()
+
+                val listaOutfits = snapshot.documents.mapNotNull { doc ->
+                    try {
+                        val data = doc.data
+                        if (data != null) {
+                            Outfits.fromMap(data, doc.id)
+                        } else null
+                    } catch (e: Exception) {
+                        null // Omitimos documentos con error
+                    }
+                }
+
+                withContext(Dispatchers.Main) {
+                    // Crear un mapa de outfits por fecha para el calendario
+                    _outfitsPorFecha.value = listaOutfits.associateBy { it.fecha }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                withContext(Dispatchers.Main) {
+                    _errorMessage.value = "Error al obtener outfits del mes: ${e.message}"
+                }
+            } finally {
+                withContext(Dispatchers.Main) {
+                    _isLoading.value = false
+                }
+            }
+        }
+    }
+
+    fun guardarOutfit(nombre: String, fechaTimestamp: Long = Date().time) {
         if (_prendasSeleccionadas.value.isNullOrEmpty()) {
             _errorMessage.value = "Debes seleccionar al menos una prenda"
             return
@@ -106,11 +189,16 @@ class OutfitsViewModel : ViewModel() {
 
         _isLoading.value = true
         val prendas = _prendasSeleccionadas.value ?: mutableListOf()
+
+        // Formatea la fecha como String dd/MM/yyyy
+        val fechaFormateada = formatearFecha(fechaTimestamp)
+
         val nuevoOutfit = Outfits(
             id = UUID.randomUUID().toString(),
             nombre = nombre,
             items = prendas,
-            usuarioId = userId  // Asignar el ID del usuario actual
+            usuarioId = userId,  // Asignar el ID del usuario actual
+            fecha = fechaFormateada  // Usar la fecha formateada
         )
 
         viewModelScope.launch(Dispatchers.IO) {

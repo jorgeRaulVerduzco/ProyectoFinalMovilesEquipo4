@@ -1,18 +1,23 @@
 package com.example.closetvirtual
 
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 data class Outfits(
     var id: String = "",
     val nombre: String = "",
     val items: List<Prenda> = emptyList(),
-    val usuarioId: String = ""
+    val usuarioId: String = "",
+    val fecha: String = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())  // Fecha como String formateado
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(
             "id" to id,
             "nombre" to nombre,
             "items" to items.map { it.toMap() },
-            "usuarioId" to usuarioId
+            "usuarioId" to usuarioId,
+            "fecha" to fecha  // Guardamos la fecha como String formateado
         )
     }
 
@@ -35,7 +40,8 @@ data class Outfits(
                 id = id,
                 nombre = map["nombre"] as? String ?: "",
                 items = prendas,
-                usuarioId = map["usuarioId"] as? String ?: ""  // Recuperar el ID del usuario del mapa
+                usuarioId = map["usuarioId"] as? String ?: "",
+                fecha = map["fecha"] as? String ?: SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
             )
         }
     }
