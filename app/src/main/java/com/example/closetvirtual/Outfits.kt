@@ -4,13 +4,15 @@ package com.example.closetvirtual
 data class Outfits(
     var id: String = "",
     val nombre: String = "",
-    val items: List<Prenda> = emptyList()
+    val items: List<Prenda> = emptyList(),
+    val usuarioId: String = ""
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(
             "id" to id,
             "nombre" to nombre,
-            "items" to items.map { it.toMap() }
+            "items" to items.map { it.toMap() },
+            "usuarioId" to usuarioId
         )
     }
 
@@ -29,11 +31,11 @@ data class Outfits(
                 prenda.tags = itemData["tags"] as? List<String> ?: emptyList()
                 prenda
             }
-
             return Outfits(
                 id = id,
                 nombre = map["nombre"] as? String ?: "",
-                items = prendas
+                items = prendas,
+                usuarioId = map["usuarioId"] as? String ?: ""  // Recuperar el ID del usuario del mapa
             )
         }
     }

@@ -3,6 +3,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -17,6 +18,7 @@ import java.util.UUID
 
 class OutfitsViewModel : ViewModel() {
     private val db = Firebase.firestore
+    private val auth = FirebaseAuth.getInstance()  // Añadir Firebase Auth
 
     // LiveData para la lista de outfits
     private val _outfits = MutableLiveData<List<Outfits>>(emptyList())
@@ -38,12 +40,24 @@ class OutfitsViewModel : ViewModel() {
         obtenerOutfits()
     }
 
+    // Obtener el ID del usuario actual
+    private fun getCurrentUserId(): String {
+        return auth.currentUser?.uid ?: ""
+    }
+
     fun obtenerOutfits() {
+        val userId = getCurrentUserId()
+        if (userId.isEmpty()) {
+            _errorMessage.value = "Usuario no autenticado"
+            return
+        }
+
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val snapshot = db.collection("outfits")
-                    .orderBy("nombre", Query.Direction.ASCENDING)
+                    .whereEqualTo("usuarioId", userId)  // Filtrar por ID de usuario actual
+
                     .get()
                     .await()
 
@@ -79,19 +93,24 @@ class OutfitsViewModel : ViewModel() {
             _errorMessage.value = "Debes seleccionar al menos una prenda"
             return
         }
-
         if (nombre.isBlank()) {
             _errorMessage.value = "Debes asignar un nombre al outfit"
             return
         }
 
-        _isLoading.value = true
+        val userId = getCurrentUserId()
+        if (userId.isEmpty()) {
+            _errorMessage.value = "Usuario no autenticado"
+            return
+        }
 
+        _isLoading.value = true
         val prendas = _prendasSeleccionadas.value ?: mutableListOf()
         val nuevoOutfit = Outfits(
             id = UUID.randomUUID().toString(),
             nombre = nombre,
-            items = prendas
+            items = prendas,
+            usuarioId = userId  // Asignar el ID del usuario actual
         )
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -104,12 +123,10 @@ class OutfitsViewModel : ViewModel() {
 
                 // Actualizar los contadores de uso para cada prenda
                 val fechaActual = SimpleDateFormat("MM/yyyy", Locale.getDefault()).format(Date())
-
                 for (prenda in prendas) {
                     // Obtener la prenda actual de Firestore
                     val prendaDoc = db.collection("prendas").document(prenda.id).get().await()
                     val prendaData = prendaDoc.toObject(Prenda::class.java)
-
                     if (prendaData != null) {
                         // Actualizar contadores
                         val usosTotales = (prendaData.usosTotales ?: 0) + 1
@@ -150,17 +167,33 @@ class OutfitsViewModel : ViewModel() {
     }
 
     fun eliminarOutfit(id: String, onComplete: (() -> Unit)? = null) {
+        val userId = getCurrentUserId()
+        if (userId.isEmpty()) {
+            _errorMessage.value = "Usuario no autenticado"
+            return
+        }
+
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                db.collection("outfits")
-                    .document(id)
-                    .delete()
-                    .await()
+                // Verificar que el outfit pertenezca al usuario actual
+                val outfitDoc = db.collection("outfits").document(id).get().await()
+                val data = outfitDoc.data
+                if (data != null && data["usuarioId"] == userId) {
+                    // Si pertenece al usuario, proceder con la eliminación
+                    db.collection("outfits")
+                        .document(id)
+                        .delete()
+                        .await()
 
-                withContext(Dispatchers.Main) {
-                    onComplete?.invoke()
-                    obtenerOutfits()
+                    withContext(Dispatchers.Main) {
+                        onComplete?.invoke()
+                        obtenerOutfits()
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        _errorMessage.value = "No tienes permiso para eliminar este outfit"
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -176,16 +209,29 @@ class OutfitsViewModel : ViewModel() {
     }
 
     fun obtenerOutfitPorId(id: String, callback: (Outfits?) -> Unit) {
+        val userId = getCurrentUserId()
+        if (userId.isEmpty()) {
+            _errorMessage.value = "Usuario no autenticado"
+            callback(null)
+            return
+        }
+
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val doc = db.collection("outfits").document(id).get().await()
                 val data = doc.data
-                val outfit = if (data != null) {
-                    Outfits.fromMap(data, doc.id)
-                } else null
 
-                withContext(Dispatchers.Main) {
-                    callback(outfit)
+                // Verificar que el outfit pertenezca al usuario actual
+                if (data != null && data["usuarioId"] == userId) {
+                    val outfit = Outfits.fromMap(data, doc.id)
+                    withContext(Dispatchers.Main) {
+                        callback(outfit)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        _errorMessage.value = "No tienes permiso para ver este outfit"
+                        callback(null)
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -196,7 +242,6 @@ class OutfitsViewModel : ViewModel() {
             }
         }
     }
-
     // Funciones para manejar la selección de prendas
     fun agregarPrendaSeleccionada(prenda: Prenda) {
         val lista = _prendasSeleccionadas.value ?: mutableListOf()
